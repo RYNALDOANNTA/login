@@ -2,29 +2,53 @@
 import bcrypt from "bcryptjs";
 
 export default async function handler(req, res) {
+  console.log("Login API hit. Method:", req.method);
+
   if (req.method !== "POST") {
     return res.status(405).json({ ok: false, error: "METHOD_NOT_ALLOWED" });
   }
 
-  const { username, password } = req.body || {};
+  const body = req.body;
+  console.log("Request body:", body);
+
+  const { username, password } = body || {};
 
   if (!username || !password) {
-    return res.status(400).json({ ok: false, error: "MISSING_CREDENTIALS" });
+    console.log("Missing credentials:", { username, password });
+    return res.status(400).json({
+      ok: false,
+      error: "MISSING_CREDENTIALS",
+      debug: {
+        hasBody: !!body,
+        username,
+        passwordExists: !!password,
+      },
+    });
   }
 
-  // USER dari ENV
+  // Ambil user & hash dari ENV
   const users = [
     {
       username: process.env.USER1_USERNAME,
       hash: process.env.USER1_HASH,
+      id: "USER1",
     },
     {
       username: process.env.USER2_USERNAME,
       hash: process.env.USER2_HASH,
+      id: "USER2",
     },
   ];
 
-  // Cek username cocok
+  const envDebug = users.map((u) => ({
+    id: u.id,
+    username: u.username,
+    hasHash: !!u.hash,
+  }));
+
+  console.log("Users from ENV:", envDebug);
+
+  // Cari username
   const user = users.find(
     (u) =>
       u.username &&
@@ -33,16 +57,27 @@ export default async function handler(req, res) {
   );
 
   if (!user) {
-    return res.status(401).json({ ok: false, error: "INVALID_CREDENTIALS" });
+    console.log("User not found or ENV not set for username:", username);
+    return res.status(401).json({
+      ok: false,
+      error: "USER_NOT_FOUND",
+      debug: envDebug,
+    });
   }
 
-  // Bandingkan password plaintext dengan hash di ENV
+  // Cek password vs hash
   const isValid = await bcrypt.compare(password, user.hash);
 
+  console.log("Password check:", { username: user.username, isValid });
+
   if (!isValid) {
-    return res.status(401).json({ ok: false, error: "INVALID_CREDENTIALS" });
+    return res.status(401).json({
+      ok: false,
+      error: "BAD_PASSWORD",
+    });
   }
 
-  // Berhasil
+  console.log("Login SUCCESS for:", user.username);
+
   return res.status(200).json({ ok: true });
 }

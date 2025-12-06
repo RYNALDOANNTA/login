@@ -1,6 +1,11 @@
 {
-  "name": "login-app",
+  "name": "monitoring-dashboard",
   "version": "1.0.0",
+  "description": "Login + Dashboard Monitoring (ESP32)",
+  "main": "index.js",
+  "scripts": {
+    "start": "vercel dev"
+  },
   "dependencies": {
     "bcryptjs": "^2.4.3"
   }

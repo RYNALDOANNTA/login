@@ -747,36 +747,41 @@
 
   // --- AMBIL DATA DARI BACKEND /api/sensor1-live ---
   async function fetchLive() {
-    try {
-      const res = await fetch('/api/sensor1-live');
-      const data = await res.json().catch(() => ({}));
+  try {
+    const res = await fetch('/api/sensor1-live?t=' + Date.now(), {
+      cache: 'no-store',
+    });
 
-      // Backend: { ok: true, speed: <number> }
-      if (!res.ok || !data || !data.ok) {
-        return;
-      }
+    console.log('Status /api/sensor1-live:', res.status);
+    const data = await res.json().catch(() => ({}));
+    console.log('JSON /api/sensor1-live:', data);
 
-      const rawSpeed =
-        typeof data.speed === 'number'
-          ? data.speed
-          : Number(data.speed) || 0;
-
-      const speed = Math.max(0, Math.min(rawSpeed, MAX_GAUGE));
-
-      // ⬅️ TANDAI SUDAH PERNAH DAPAT DATA
-      hasReceivedData = true;
-      lastUpdateMs = Date.now();
-
-      refreshOnlineStatus();
-
-      updateGauge(mminFill, mminText, speed);
-      dataPoints.shift();
-      dataPoints.push(speed);
-      renderChart();
-    } catch (err) {
-      console.error('Error fetching /api/sensor1-live:', err);
+    // Backend: { ok: true, speed: <number> }
+    if (!res.ok || !data || data.ok !== true) {
+      return;
     }
+
+    const rawSpeed =
+      typeof data.speed === 'number'
+        ? data.speed
+        : Number(data.speed) || 0;
+
+    const speed = Math.max(0, Math.min(rawSpeed, MAX_GAUGE));
+
+    hasReceivedData = true;
+    lastUpdateMs = Date.now();
+
+    refreshOnlineStatus();
+
+    updateGauge(mminFill, mminText, speed);
+    dataPoints.shift();
+    dataPoints.push(speed);
+    renderChart();
+  } catch (err) {
+    console.error('Error fetching /api/sensor1-live:', err);
   }
+}
+
 
   fetchLive();
   setInterval(fetchLive, 1000);       // ambil data tiap 1 detik

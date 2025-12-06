@@ -675,13 +675,11 @@
   const barsContainer = document.getElementById('barsContainer');
   const statusDotEl   = document.getElementById('statusDot');
 
-  let dataPoints = Array(10).fill(0);
+    let dataPoints = Array(10).fill(0);
 
   // STATE ONLINE / OFFLINE
-  let hasReceivedData   = false;   // pernah dapat data atau belum
-  let currentSpeed      = 0;       // speed terakhir yang ditampilkan
-  let lastNonZeroMs     = 0;       // kapan terakhir speed > 0
-  const ZERO_OFF_TIMEOUT = 30000;  // 30 detik di 0 → OFFLINE (ubah kalau mau)
+  let lastNonZeroMs     = 0;        // kapan terakhir speed > 0
+  const ZERO_OFF_TIMEOUT = 10000;   // 30 detik tanpa speed > 0 → OFFLINE
 
   function setOnline() {
     if (statusDotEl) statusDotEl.classList.add('online');
@@ -691,19 +689,19 @@
   }
 
   function refreshOnlineStatus() {
-    // Belum pernah dapat data sama sekali
-    if (!hasReceivedData) {
+    const now = Date.now();
+
+    // Kalau BELUM PERNAH ada speed > 0 sama sekali -> OFF
+    if (lastNonZeroMs === 0) {
       setOffline();
       return;
     }
 
-    const now = Date.now();
-
-    // Kalau speed sekarang 0 dan sudah lama tidak ada speed > 0
-    if (currentSpeed === 0 && lastNonZeroMs > 0 && (now - lastNonZeroMs > ZERO_OFF_TIMEOUT)) {
+    // Kalau sudah terlalu lama tidak ada speed > 0 -> OFF
+    if (now - lastNonZeroMs > ZERO_OFF_TIMEOUT) {
       setOffline();
     } else {
-      // Kalau speed > 0, atau baru saja turun ke 0 (belum lewat timeout)
+      // Dalam 30 detik terakhir pernah ada speed > 0 -> ON
       setOnline();
     }
   }
@@ -772,17 +770,14 @@
 
       const speed = Math.max(0, Math.min(rawSpeed, MAX_GAUGE));
 
-      // Update state
-      hasReceivedData = true;
-      currentSpeed = speed;
-
-      // Kalau speed > 0, catat waktu terakhir ada speed
+        // Kalau speed > 0, catat waktu terakhir ada speed
       if (speed > 0) {
         lastNonZeroMs = Date.now();
       }
 
       // Update status online/offline
       refreshOnlineStatus();
+
 
       // Update tampilan gauge + chart
       updateGauge(mminFill, mminText, speed);

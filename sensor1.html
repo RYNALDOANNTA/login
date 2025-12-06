@@ -37,14 +37,12 @@
             letter-spacing: 1px;
             padding: 0 10px;
             justify-content: space-between;
-
-            /* Make header above content so hamburger clickable on desktop */
             position: relative;
             z-index: 1600;
         }
 
         .header .dot {
-            color: #666666;              /* default: offline (abu-abu) */
+            color: #666666;
             margin-left: 8px;
             font-size: 16px;
             line-height: 0;
@@ -53,7 +51,7 @@
         }
 
         .header .dot.online {
-            color: #00e676;              /* online: hijau */
+            color: #00e676;
             text-shadow: 0 0 8px rgba(0, 230, 118, 0.6);
         }
 
@@ -66,8 +64,6 @@
             display: flex;
             flex-direction: column;
             gap: 4px;
-
-            /* ensure hamburger is above backdrop but below side menu when open */
             position: relative;
             z-index: 1601;
         }
@@ -91,7 +87,7 @@
             box-shadow: 2px 0 15px rgba(0,0,0,0.6);
             transform: translateX(-100%);
             transition: transform 0.3s ease;
-            z-index: 2000; /* bumped so it is above everything when open */
+            z-index: 2000;
             padding: 20px 16px;
             display: flex;
             flex-direction: column;
@@ -133,7 +129,6 @@
             color: #000;
         }
 
-        /* Styling khusus untuk button Kontak */
         .menu-toggle {
             background: none;
             border: none;
@@ -183,7 +178,7 @@
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.3s ease;
-            z-index: 1500; /* under header but above content */
+            z-index: 1500;
         }
 
         .backdrop.show {
@@ -223,7 +218,6 @@
             width: 100%;
         }
 
-        /* --- SVG WRAPPER --- */
         .gauge-wrapper {
             position: relative;
             width: 100%;
@@ -288,7 +282,6 @@
             transform: translateX(-50px);
         }
 
-        /* --- CHART SECTION --- */
         .chart-section {
             border-top: 1px solid #333;
             padding-top: 20px;
@@ -392,7 +385,6 @@
         .btn.active:hover { background-color: #00c853; }
         .btn:hover:not(.active) { color: #aaa; }
 
-        /* --- COLOR LEGEND --- */
         .color-legend {
             display: flex;
             gap: 15px;
@@ -558,16 +550,16 @@
     </style>
 </head>
 <body>
-   <!-- GUARD LOGIN: CEK LOCALSTORAGE -->
+    <!-- GUARD LOGIN: CEK LOCALSTORAGE -->
     <script>
       (function () {
         const isLoggedIn = localStorage.getItem("isLoggedIn");
         if (isLoggedIn !== "true") {
-          // Kalau belum login, paksa balik ke halaman login (index.html)
           window.location.href = "/";
         }
       })();
     </script>
+
     <!-- BACKDROP MENU -->
     <div class="backdrop" id="backdrop"></div>
 
@@ -583,7 +575,6 @@
         <a href="sensor3.html">Sensor 3</a>
         <a href="excel.html">Excel</a>
 
-        <!-- Kontak + panah -->
         <button type="button" id="menuKontak" class="menu-toggle">
             <span>Kontak</span>
             <span class="menu-arrow" id="menuKontakArrow">▶</span>
@@ -593,7 +584,6 @@
             Raynaldo Ananta Wijaya
         </div>
 
-        <!-- Footer dev -->
         <div class="menu-footer" style="margin-top:auto;font-size:11px;color:#666;border-top:1px solid #333;padding-top:8px;">
             dev Raynaldo Ananta Wijaya
         </div>
@@ -604,7 +594,6 @@
             <div>
                 Sensor 1 <span class="dot" id="statusDot">●</span>
             </div>
-            <!-- HAMBURGER BUTTON -->
             <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
                 <span></span>
                 <span></span>
@@ -674,172 +663,167 @@
         </div>
     </div>
 
-    <!-- SCRIPT: Firebase + Dashboard Logic -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    <!-- SCRIPT: Dashboard Logic via Backend API -->
+    <script>
+      // --- GAUGE + CHART CONFIG ---
+      const MAX_GAUGE = 250;
+      const MAX_CHART = 250;
+      const CIRCUMFERENCE = Math.PI * 100;
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDbfFC7p7G0KVEFKaKM_V6PkMMjgUA1NQ0",
-    authDomain: "esp32-speed-monitor.firebaseapp.com",
-    databaseURL: "https://esp32-speed-monitor-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "esp32-speed-monitor",
-    storageBucket: "esp32-speed-monitor.firebasestorage.app",
-    messagingSenderId: "885299347088",
-    appId: "1:885299347088:web:b494c68af1e40e23af2215",
-    measurementId: "G-5RKH8TP2BP"
-  };
+      const mminFill      = document.getElementById('mminFill');
+      const mminText      = document.getElementById('mminText');
+      const barsContainer = document.getElementById('barsContainer');
+      const statusDotEl   = document.getElementById('statusDot');
 
-  const app = initializeApp(firebaseConfig);
-  const db  = getDatabase(app);
+      let dataPoints = Array(10).fill(0);
 
-  // --- GAUGE CONFIG ---
-  const MAX_GAUGE = 250;
-  const MAX_CHART = 250;
-  const CIRCUMFERENCE = Math.PI * 100;
+      // ONLINE / OFFLINE (HEARTBEAT)
+      let lastUpdateMs = 0;
+      const OFFLINE_TIMEOUT = 10000; // 10 detik
 
-  const mminFill      = document.getElementById('mminFill');
-  const mminText      = document.getElementById('mminText');
-  const barsContainer = document.getElementById('barsContainer');
-  const statusDotEl   = document.getElementById('statusDot');
-
-  let dataPoints = Array(10).fill(0);
-
-  // --- ONLINE / OFFLINE (HEARTBEAT) ---
-  let lastUpdateMs = 0;
-  const OFFLINE_TIMEOUT = 10000; // 10 detik tanpa data → offline
-
-  function setOnline()  {
-    if (statusDotEl) statusDotEl.classList.add('online');
-  }
-  function setOffline() {
-    if (statusDotEl) statusDotEl.classList.remove('online');
-  }
-
-  function refreshOnlineStatus() {
-    const now = Date.now();
-    if (now - lastUpdateMs <= OFFLINE_TIMEOUT && lastUpdateMs !== 0) {
-      setOnline();
-    } else {
-      setOffline();
-    }
-  }
-
-  setOffline(); // default
-
-  function getColorForValue(value) {
-    if (value >= 150) return '#00e676';
-    if (value >= 80)  return '#ffeb3b';
-    if (value > 0)    return '#ff5252';
-    return '#555555';
-  }
-
-  function updateGauge(fillEl, textEl, val) {
-    let v = Math.max(0, Math.min(val, MAX_GAUGE));
-    let percent = v / MAX_GAUGE;
-    let offset = CIRCUMFERENCE * (1 - percent);
-
-    const color = getColorForValue(v);
-    if (fillEl) fillEl.style.stroke = color;
-    if (textEl) {
-      textEl.style.color = color;
-      textEl.style.textShadow = `0 0 15px ${color}40`;
-      textEl.textContent = Math.round(v);
-    }
-    if (fillEl) fillEl.style.strokeDashoffset = offset;
-  }
-
-  function renderChart() {
-    if (!barsContainer) return;
-    barsContainer.innerHTML = '';
-    dataPoints.forEach(dp => {
-      const bar = document.createElement('div');
-      bar.className = 'bar';
-      const h = (dp / MAX_CHART) * 100;
-      bar.style.height = `${Math.min(h,100)}%`;
-      bar.style.backgroundColor = getColorForValue(dp);
-      barsContainer.appendChild(bar);
-    });
-  }
-
-  renderChart();
-  updateGauge(mminFill, mminText, 0);
-
-  // --- LISTENER FIREBASE ---
-  const liveRef = ref(db, 'sensor1/live');
-
-  onValue(liveRef, (snap) => {
-    const data = snap.val() || {};
-
-    // setiap ada data baru → update timestamp heartbeat
-    lastUpdateMs = Date.now();
-    refreshOnlineStatus();
-
-    const rawSpeed = (typeof data.speed === 'number') ? data.speed : 0;
-    const speed    = Math.max(0, Math.min(rawSpeed, MAX_GAUGE));
-
-    updateGauge(mminFill, mminText, speed);
-    dataPoints.shift();
-    dataPoints.push(speed);
-    renderChart();
-  });
-
-  // cek online/offline tiap 1 detik
-  setInterval(refreshOnlineStatus, 1000);
-
-  // --- MENU / UI LAINNYA ---
-  const hamburgerBtn    = document.getElementById('hamburgerBtn');
-  const sideMenu        = document.getElementById('sideMenu');
-  const backdrop        = document.getElementById('backdrop');
-  const closeMenu       = document.getElementById('closeMenu');
-  const menuKontak      = document.getElementById('menuKontak');
-  const contactInfo     = document.getElementById('contactInfo');
-  const menuKontakArrow = document.getElementById('menuKontakArrow');
-
-  function openMenu() {
-    if (!sideMenu || !backdrop) return;
-    sideMenu.classList.add('open');
-    backdrop.classList.add('show');
-  }
-
-  function closeMenuFn() {
-    if (!sideMenu || !backdrop) return;
-    sideMenu.classList.remove('open');
-    backdrop.classList.remove('show');
-  }
-
-  if (hamburgerBtn) hamburgerBtn.addEventListener('click', openMenu);
-  if (closeMenu)    closeMenu.addEventListener('click', closeMenuFn);
-  if (backdrop)     backdrop.addEventListener('click', closeMenuFn);
-
-  if (menuKontak && contactInfo && menuKontakArrow) {
-    menuKontak.addEventListener('click', function(e) {
-      e.stopPropagation(); 
-      const isShown = contactInfo.classList.toggle('show');
-      if (isShown) {
-        menuKontakArrow.textContent = '▼';
-        menuKontak.style.backgroundColor = 'rgba(0, 230, 118, 0.2)';
-        menuKontak.style.color = '#00e676';
-      } else {
-        menuKontakArrow.textContent = '▶';
-        menuKontak.style.backgroundColor = '';
-        menuKontak.style.color = '#ddd';
+      function setOnline() {
+        if (statusDotEl) statusDotEl.classList.add('online');
       }
-    });
-  }
-
-  document.addEventListener('click', function(e) {
-    if (contactInfo && contactInfo.classList.contains('show') && 
-        menuKontak && !menuKontak.contains(e.target) && 
-        !contactInfo.contains(e.target)) {
-      contactInfo.classList.remove('show');
-      if (menuKontakArrow) menuKontakArrow.textContent = '▶';
-      if (menuKontak) {
-        menuKontak.style.backgroundColor = '';
-        menuKontak.style.color = '#ddd';
+      function setOffline() {
+        if (statusDotEl) statusDotEl.classList.remove('online');
       }
-    }
-  });
-</script>
+
+      function refreshOnlineStatus() {
+        const now = Date.now();
+        if (now - lastUpdateMs <= OFFLINE_TIMEOUT && lastUpdateMs !== 0) {
+          setOnline();
+        } else {
+          setOffline();
+        }
+      }
+
+      setOffline(); // default
+
+      function getColorForValue(value) {
+        if (value >= 150) return '#00e676';
+        if (value >= 80)  return '#ffeb3b';
+        if (value > 0)    return '#ff5252';
+        return '#555555';
+      }
+
+      function updateGauge(fillEl, textEl, val) {
+        let v = Math.max(0, Math.min(val, MAX_GAUGE));
+        let percent = v / MAX_GAUGE;
+        let offset = CIRCUMFERENCE * (1 - percent);
+
+        const color = getColorForValue(v);
+        if (fillEl) fillEl.style.stroke = color;
+        if (textEl) {
+          textEl.style.color = color;
+          textEl.style.textShadow = `0 0 15px ${color}40`;
+          textEl.textContent = Math.round(v);
+        }
+        if (fillEl) fillEl.style.strokeDashoffset = offset;
+      }
+
+      function renderChart() {
+        if (!barsContainer) return;
+        barsContainer.innerHTML = '';
+        dataPoints.forEach(dp => {
+          const bar = document.createElement('div');
+          bar.className = 'bar';
+          const h = (dp / MAX_CHART) * 100;
+          bar.style.height = `${Math.min(h,100)}%`;
+          bar.style.backgroundColor = getColorForValue(dp);
+          barsContainer.appendChild(bar);
+        });
+      }
+
+      renderChart();
+      updateGauge(mminFill, mminText, 0);
+
+      // --- AMBIL DATA DARI BACKEND /api/sensor1-live ---
+      async function fetchLive() {
+        try {
+          const res = await fetch('/api/sensor1-live');
+          const data = await res.json().catch(() => ({}));
+
+          // Backend disarankan return: { ok: true, speed: <number> }
+          if (!res.ok || !data || !data.ok) {
+            return;
+          }
+
+          const rawSpeed =
+            typeof data.speed === 'number'
+              ? data.speed
+              : Number(data.speed) || 0;
+
+          const speed = Math.max(0, Math.min(rawSpeed, MAX_GAUGE));
+
+          lastUpdateMs = Date.now();
+          refreshOnlineStatus();
+
+          updateGauge(mminFill, mminText, speed);
+          dataPoints.shift();
+          dataPoints.push(speed);
+          renderChart();
+        } catch (err) {
+          console.error('Error fetching /api/sensor1-live:', err);
+        }
+      }
+
+      fetchLive();
+      setInterval(fetchLive, 1000);       // ambil data tiap 1 detik
+      setInterval(refreshOnlineStatus, 1000);
+
+      // --- MENU / UI LAINNYA ---
+      const hamburgerBtn    = document.getElementById('hamburgerBtn');
+      const sideMenu        = document.getElementById('sideMenu');
+      const backdrop        = document.getElementById('backdrop');
+      const closeMenu       = document.getElementById('closeMenu');
+      const menuKontak      = document.getElementById('menuKontak');
+      const contactInfo     = document.getElementById('contactInfo');
+      const menuKontakArrow = document.getElementById('menuKontakArrow');
+
+      function openMenu() {
+        if (!sideMenu || !backdrop) return;
+        sideMenu.classList.add('open');
+        backdrop.classList.add('show');
+      }
+
+      function closeMenuFn() {
+        if (!sideMenu || !backdrop) return;
+        sideMenu.classList.remove('open');
+        backdrop.classList.remove('show');
+      }
+
+      if (hamburgerBtn) hamburgerBtn.addEventListener('click', openMenu);
+      if (closeMenu)    closeMenu.addEventListener('click', closeMenuFn);
+      if (backdrop)     backdrop.addEventListener('click', closeMenuFn);
+
+      if (menuKontak && contactInfo && menuKontakArrow) {
+        menuKontak.addEventListener('click', function(e) {
+          e.stopPropagation(); 
+          const isShown = contactInfo.classList.toggle('show');
+          if (isShown) {
+            menuKontakArrow.textContent = '▼';
+            menuKontak.style.backgroundColor = 'rgba(0, 230, 118, 0.2)';
+            menuKontak.style.color = '#00e676';
+          } else {
+            menuKontakArrow.textContent = '▶';
+            menuKontak.style.backgroundColor = '';
+            menuKontak.style.color = '#ddd';
+          }
+        });
+      }
+
+      document.addEventListener('click', function(e) {
+        if (contactInfo && contactInfo.classList.contains('show') && 
+            menuKontak && !menuKontak.contains(e.target) && 
+            !contactInfo.contains(e.target)) {
+          contactInfo.classList.remove('show');
+          if (menuKontakArrow) menuKontakArrow.textContent = '▶';
+          if (menuKontak) {
+            menuKontak.style.backgroundColor = '';
+            menuKontak.style.color = '#ddd';
+          }
+        }
+      });
+    </script>
 </body>
 </html>

@@ -665,165 +665,176 @@
 
     <!-- SCRIPT: Dashboard Logic via Backend API -->
     <script>
-      // --- GAUGE + CHART CONFIG ---
-      const MAX_GAUGE = 250;
-      const MAX_CHART = 250;
-      const CIRCUMFERENCE = Math.PI * 100;
+  // --- GAUGE + CHART CONFIG ---
+  const MAX_GAUGE = 250;
+  const MAX_CHART = 250;
+  const CIRCUMFERENCE = Math.PI * 100;
 
-      const mminFill      = document.getElementById('mminFill');
-      const mminText      = document.getElementById('mminText');
-      const barsContainer = document.getElementById('barsContainer');
-      const statusDotEl   = document.getElementById('statusDot');
+  const mminFill      = document.getElementById('mminFill');
+  const mminText      = document.getElementById('mminText');
+  const barsContainer = document.getElementById('barsContainer');
+  const statusDotEl   = document.getElementById('statusDot');
 
-      let dataPoints = Array(10).fill(0);
+  let dataPoints = Array(10).fill(0);
 
-      // ONLINE / OFFLINE (HEARTBEAT)
-      let lastUpdateMs = 0;
-      const OFFLINE_TIMEOUT = 10000; // 10 detik
+  // ONLINE / OFFLINE (HEARTBEAT)
+  let lastUpdateMs = 0;
+  let hasReceivedData = false;   // ⬅️ FLAG BARU: belum pernah dapat data
+  const OFFLINE_TIMEOUT = 10000; // 10 detik
 
-      function setOnline() {
-        if (statusDotEl) statusDotEl.classList.add('online');
+  function setOnline() {
+    if (statusDotEl) statusDotEl.classList.add('online');
+  }
+  function setOffline() {
+    if (statusDotEl) statusDotEl.classList.remove('online');
+  }
+
+  function refreshOnlineStatus() {
+    // Kalau BELUM PERNAH dapat data → paksa OFF / abu-abu
+    if (!hasReceivedData) {
+      setOffline();
+      return;
+    }
+
+    const now = Date.now();
+    if (now - lastUpdateMs <= OFFLINE_TIMEOUT) {
+      setOnline();
+    } else {
+      setOffline();
+    }
+  }
+
+  // Kondisi awal: paksa OFF dulu
+  setOffline();
+
+  function getColorForValue(value) {
+    if (value >= 150) return '#00e676';
+    if (value >= 80)  return '#ffeb3b';
+    if (value > 0)    return '#ff5252';
+    return '#555555';
+  }
+
+  function updateGauge(fillEl, textEl, val) {
+    let v = Math.max(0, Math.min(val, MAX_GAUGE));
+    let percent = v / MAX_GAUGE;
+    let offset = CIRCUMFERENCE * (1 - percent);
+
+    const color = getColorForValue(v);
+    if (fillEl) fillEl.style.stroke = color;
+    if (textEl) {
+      textEl.style.color = color;
+      textEl.style.textShadow = `0 0 15px ${color}40`;
+      textEl.textContent = Math.round(v);
+    }
+    if (fillEl) fillEl.style.strokeDashoffset = offset;
+  }
+
+  function renderChart() {
+    if (!barsContainer) return;
+    barsContainer.innerHTML = '';
+    dataPoints.forEach(dp => {
+      const bar = document.createElement('div');
+      bar.className = 'bar';
+      const h = (dp / MAX_CHART) * 100;
+      bar.style.height = `${Math.min(h,100)}%`;
+      bar.style.backgroundColor = getColorForValue(dp);
+      barsContainer.appendChild(bar);
+    });
+  }
+
+  renderChart();
+  updateGauge(mminFill, mminText, 0);
+
+  // --- AMBIL DATA DARI BACKEND /api/sensor1-live ---
+  async function fetchLive() {
+    try {
+      const res = await fetch('/api/sensor1-live');
+      const data = await res.json().catch(() => ({}));
+
+      // Backend: { ok: true, speed: <number> }
+      if (!res.ok || !data || !data.ok) {
+        return;
       }
-      function setOffline() {
-        if (statusDotEl) statusDotEl.classList.remove('online');
-      }
 
-      function refreshOnlineStatus() {
-        const now = Date.now();
-        if (now - lastUpdateMs <= OFFLINE_TIMEOUT && lastUpdateMs !== 0) {
-          setOnline();
-        } else {
-          setOffline();
-        }
-      }
+      const rawSpeed =
+        typeof data.speed === 'number'
+          ? data.speed
+          : Number(data.speed) || 0;
 
-      setOffline(); // default
+      const speed = Math.max(0, Math.min(rawSpeed, MAX_GAUGE));
 
-      function getColorForValue(value) {
-        if (value >= 150) return '#00e676';
-        if (value >= 80)  return '#ffeb3b';
-        if (value > 0)    return '#ff5252';
-        return '#555555';
-      }
+      // ⬅️ TANDAI SUDAH PERNAH DAPAT DATA
+      hasReceivedData = true;
+      lastUpdateMs = Date.now();
 
-      function updateGauge(fillEl, textEl, val) {
-        let v = Math.max(0, Math.min(val, MAX_GAUGE));
-        let percent = v / MAX_GAUGE;
-        let offset = CIRCUMFERENCE * (1 - percent);
+      refreshOnlineStatus();
 
-        const color = getColorForValue(v);
-        if (fillEl) fillEl.style.stroke = color;
-        if (textEl) {
-          textEl.style.color = color;
-          textEl.style.textShadow = `0 0 15px ${color}40`;
-          textEl.textContent = Math.round(v);
-        }
-        if (fillEl) fillEl.style.strokeDashoffset = offset;
-      }
-
-      function renderChart() {
-        if (!barsContainer) return;
-        barsContainer.innerHTML = '';
-        dataPoints.forEach(dp => {
-          const bar = document.createElement('div');
-          bar.className = 'bar';
-          const h = (dp / MAX_CHART) * 100;
-          bar.style.height = `${Math.min(h,100)}%`;
-          bar.style.backgroundColor = getColorForValue(dp);
-          barsContainer.appendChild(bar);
-        });
-      }
-
+      updateGauge(mminFill, mminText, speed);
+      dataPoints.shift();
+      dataPoints.push(speed);
       renderChart();
-      updateGauge(mminFill, mminText, 0);
+    } catch (err) {
+      console.error('Error fetching /api/sensor1-live:', err);
+    }
+  }
 
-      // --- AMBIL DATA DARI BACKEND /api/sensor1-live ---
-      async function fetchLive() {
-        try {
-          const res = await fetch('/api/sensor1-live');
-          const data = await res.json().catch(() => ({}));
+  fetchLive();
+  setInterval(fetchLive, 1000);       // ambil data tiap 1 detik
+  setInterval(refreshOnlineStatus, 1000);
 
-          // Backend disarankan return: { ok: true, speed: <number> }
-          if (!res.ok || !data || !data.ok) {
-            return;
-          }
+  // --- MENU / UI LAINNYA ---
+  const hamburgerBtn    = document.getElementById('hamburgerBtn');
+  const sideMenu        = document.getElementById('sideMenu');
+  const backdrop        = document.getElementById('backdrop');
+  const closeMenu       = document.getElementById('closeMenu');
+  const menuKontak      = document.getElementById('menuKontak');
+  const contactInfo     = document.getElementById('contactInfo');
+  const menuKontakArrow = document.getElementById('menuKontakArrow');
 
-          const rawSpeed =
-            typeof data.speed === 'number'
-              ? data.speed
-              : Number(data.speed) || 0;
+  function openMenu() {
+    if (!sideMenu || !backdrop) return;
+    sideMenu.classList.add('open');
+    backdrop.classList.add('show');
+  }
 
-          const speed = Math.max(0, Math.min(rawSpeed, MAX_GAUGE));
+  function closeMenuFn() {
+    if (!sideMenu || !backdrop) return;
+    sideMenu.classList.remove('open');
+    backdrop.classList.remove('show');
+  }
 
-          lastUpdateMs = Date.now();
-          refreshOnlineStatus();
+  if (hamburgerBtn) hamburgerBtn.addEventListener('click', openMenu);
+  if (closeMenu)    closeMenu.addEventListener('click', closeMenuFn);
+  if (backdrop)     backdrop.addEventListener('click', closeMenuFn);
 
-          updateGauge(mminFill, mminText, speed);
-          dataPoints.shift();
-          dataPoints.push(speed);
-          renderChart();
-        } catch (err) {
-          console.error('Error fetching /api/sensor1-live:', err);
-        }
+  if (menuKontak && contactInfo && menuKontakArrow) {
+    menuKontak.addEventListener('click', function(e) {
+      e.stopPropagation(); 
+      const isShown = contactInfo.classList.toggle('show');
+      if (isShown) {
+        menuKontakArrow.textContent = '▼';
+        menuKontak.style.backgroundColor = 'rgba(0, 230, 118, 0.2)';
+        menuKontak.style.color = '#00e676';
+      } else {
+        menuKontakArrow.textContent = '▶';
+        menuKontak.style.backgroundColor = '';
+        menuKontak.style.color = '#ddd';
       }
+    });
+  }
 
-      fetchLive();
-      setInterval(fetchLive, 1000);       // ambil data tiap 1 detik
-      setInterval(refreshOnlineStatus, 1000);
-
-      // --- MENU / UI LAINNYA ---
-      const hamburgerBtn    = document.getElementById('hamburgerBtn');
-      const sideMenu        = document.getElementById('sideMenu');
-      const backdrop        = document.getElementById('backdrop');
-      const closeMenu       = document.getElementById('closeMenu');
-      const menuKontak      = document.getElementById('menuKontak');
-      const contactInfo     = document.getElementById('contactInfo');
-      const menuKontakArrow = document.getElementById('menuKontakArrow');
-
-      function openMenu() {
-        if (!sideMenu || !backdrop) return;
-        sideMenu.classList.add('open');
-        backdrop.classList.add('show');
+  document.addEventListener('click', function(e) {
+    if (contactInfo && contactInfo.classList.contains('show') && 
+        menuKontak && !menuKontak.contains(e.target) && 
+        !contactInfo.contains(e.target)) {
+      contactInfo.classList.remove('show');
+      if (menuKontakArrow) menuKontakArrow.textContent = '▶';
+      if (menuKontak) {
+        menuKontak.style.backgroundColor = '';
+        menuKontak.style.color = '#ddd';
       }
-
-      function closeMenuFn() {
-        if (!sideMenu || !backdrop) return;
-        sideMenu.classList.remove('open');
-        backdrop.classList.remove('show');
-      }
-
-      if (hamburgerBtn) hamburgerBtn.addEventListener('click', openMenu);
-      if (closeMenu)    closeMenu.addEventListener('click', closeMenuFn);
-      if (backdrop)     backdrop.addEventListener('click', closeMenuFn);
-
-      if (menuKontak && contactInfo && menuKontakArrow) {
-        menuKontak.addEventListener('click', function(e) {
-          e.stopPropagation(); 
-          const isShown = contactInfo.classList.toggle('show');
-          if (isShown) {
-            menuKontakArrow.textContent = '▼';
-            menuKontak.style.backgroundColor = 'rgba(0, 230, 118, 0.2)';
-            menuKontak.style.color = '#00e676';
-          } else {
-            menuKontakArrow.textContent = '▶';
-            menuKontak.style.backgroundColor = '';
-            menuKontak.style.color = '#ddd';
-          }
-        });
-      }
-
-      document.addEventListener('click', function(e) {
-        if (contactInfo && contactInfo.classList.contains('show') && 
-            menuKontak && !menuKontak.contains(e.target) && 
-            !contactInfo.contains(e.target)) {
-          contactInfo.classList.remove('show');
-          if (menuKontakArrow) menuKontakArrow.textContent = '▶';
-          if (menuKontak) {
-            menuKontak.style.backgroundColor = '';
-            menuKontak.style.color = '#ddd';
-          }
-        }
-      });
-    </script>
+    }
+  });
+</script>
 </body>
 </html>

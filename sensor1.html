@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Dashboard - Sensor 1</title>
+    <style>
+        /* --- RESET & BASE STYLES --- */
+        * { box-sizing: border-box; }
+        
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 100%;
+            min-height: 100vh;
+            background-color: #1e1e1e;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- HEADER --- */
+        .header {
+            font-size: 24px;
+            font-weight: 900;
+            margin-bottom: 30px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            letter-spacing: 1px;
+            padding: 0 10px;
+            justify-content: space-between;
+
+            /* Make header above content so hamburger clickable on desktop */
+            position: relative;
+            z-index: 1600;
+        }
+
+        .header .dot {
+            color: #666666;              /* default: offline (abu-abu) */
+            margin-left: 8px;
+            font-size: 16px;
+            line-height: 0;
+            margin-top: -5px;
+            transition: color 0.3s, text-shadow 0.3s;
+        }
+
+        .header .dot.online {
+            color: #00e676;              /* online: hijau */
+            text-shadow: 0 0 8px rgba(0, 230, 118, 0.6);
+        }
+
+        /* HAMBURGER */
+        .hamburger {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+
+            /* ensure hamburger is above backdrop but below side menu when open */
+            position: relative;
+            z-index: 1601;
+        }
+
+        .hamburger span {
+            width: 20px;
+            height: 2px;
+            background-color: #ffffff;
+            border-radius: 2px;
+            transition: 0.3s;
+        }
+
+        /* SIDE MENU */
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 240px;
+            height: 100vh;
+            background-color: #181818;
+            box-shadow: 2px 0 15px rgba(0,0,0,0.6);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            z-index: 2000; /* bumped so it is above everything when open */
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .side-menu.open {
+            transform: translateX(0);
+        }
+
+        .side-menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .side-menu-header button {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .side-menu a {
+            text-decoration: none;
+            color: #ddd;
+            font-size: 14px;
+            padding: 8px 6px;
+            border-radius: 6px;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .side-menu a:hover {
+            background-color: #00e676;
+            color: #000;
+        }
+
+        /* Styling khusus untuk button Kontak */
+        .menu-toggle {
+            background: none;
+            border: none;
+            text-align: left;
+            width: 100%;
+            padding: 8px 6px;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #ddd;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: inherit;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .menu-toggle:hover {
+            background-color: rgba(0, 230, 118, 0.1);
+            color: #fff;
+        }
+
+        .contact-info {
+            font-size: 12px;
+            color: #aaa;
+            padding: 8px 6px 4px 6px;
+            border-left: 2px solid #00e676;
+            margin-left: 10px;
+            margin-bottom: 5px;
+            display: none;
+        }
+
+        .contact-info.show {
+            display: block;
+        }
+
+        .menu-arrow {
+            font-size: 10px;
+            transition: transform 0.3s;
+        }
+
+        /* BACKDROP */
+        .backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 1500; /* under header but above content */
+        }
+
+        .backdrop.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* --- GAUGE LAYOUT --- */
+        .gauges {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+            margin-bottom: 40px;
+            flex: 1;
+            justify-content: center;
+            margin-top: -200px;
+        }
+
+        .gauge-unit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 300px;
+            justify-content: center;
+        }
+
+        .gauge-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            text-align: center;
+            width: 100%;
+        }
+
+        /* --- SVG WRAPPER --- */
+        .gauge-wrapper {
+            position: relative;
+            width: 100%;
+            height: 120px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .gauge-svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        .gauge-path-bg, .gauge-path-fill {
+            fill: none;
+            stroke-width: 18;
+            stroke-linecap: round;
+        }
+
+        .gauge-path-bg {
+            stroke: #333;
+        }
+
+        .gauge-path-fill {
+            stroke: #00e676;
+            transition: stroke-dashoffset 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+            stroke-dasharray: 314;
+            stroke-dashoffset: 314;
+        }
+
+        .gauge-value {
+            position: absolute;
+            bottom: 25px;
+            left: 0; 
+            width: 100%;
+            text-align: center;
+            font-size: 27px;
+            font-weight: 700;
+            color: #00e676;
+            text-shadow: 0 0 15px rgba(0, 230, 118, 0.3);
+            font-family: 'Inter', 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .gauge-labels {
+            position: absolute;
+            bottom: 1px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0;
+            font-size: 14px;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .gauge-labels span:first-child {
+            transform: translateX(60px);
+        }
+
+        .gauge-labels span:last-child {
+            transform: translateX(-50px);
+        }
+
+        /* --- CHART SECTION --- */
+        .chart-section {
+            border-top: 1px solid #333;
+            padding-top: 20px;
+            flex-shrink: 0;
+        }
+
+        .chart-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 15px;
+            padding: 0 10px;
+        }
+
+        .chart-label {
+            font-size: 12px;
+            color: #bbb;
+            display: flex;
+            align-items: center;
+        }
+        
+        .chart-label span {
+            color: #00e676;
+            font-size: 14px;
+            margin-right: 6px;
+        }
+
+        .chart-big-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .chart-visual {
+            display: flex;
+            height: 120px;
+            gap: 8px;
+            padding: 0 10px;
+        }
+
+        .y-axis {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            color: #00e676;
+            font-size: 10px;
+            text-align: right;
+            padding-right: 8px;
+            border-right: 1px solid #333;
+            font-family: monospace;
+        }
+
+        .bars-container {
+            flex: 1;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 6px;
+        }
+
+        .bar {
+            flex: 1;
+            border-radius: 3px 3px 0 0;
+            transition: height 0.5s ease;
+            min-height: 2px;
+            opacity: 0.8;
+        }
+        .bar:last-child { 
+            opacity: 1; 
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            background: #151515;
+            padding: 5px;
+            border-radius: 8px;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .btn {
+            background: none;
+            border: none;
+            color: #555;
+            padding: 6px 8px;
+            font-size: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: 0.3s;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .btn.active {
+            background-color: #00e676;
+            color: #000;
+        }
+        .btn.active:hover { background-color: #00c853; }
+        .btn:hover:not(.active) { color: #aaa; }
+
+        /* --- COLOR LEGEND --- */
+        .color-legend {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 10px;
+            color: #bbb;
+        }
+
+        .color-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .color-dot.red { background-color: #ff5252; }
+        .color-dot.yellow { background-color: #ffeb3b; }
+        .color-dot.green { background-color: #00e676; }
+
+        @media (min-width: 768px) {
+            body {
+                margin: 0;
+                padding: 0;
+                background-color: #121212;
+                display: block;
+            }
+
+            .color-legend { gap: 20px; }
+            .legend-item { font-size: 11px; }
+            .color-dot { width: 10px; height: 10px; }
+
+            .container {
+                width: 100%;
+                max-width: none;
+                min-height: 100vh;
+                border-radius: 0;
+                box-shadow: none;
+                padding: 32px 60px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+
+            .header {
+                font-size: 32px;
+                margin-bottom: 40px;
+            }
+
+            .gauges {
+                flex: 0;
+                margin-top: 0;
+                margin-bottom: 32px;
+                gap: 32px;
+            }
+
+            .gauge-unit { max-width: none; }
+            .gauge-title { font-size: 18px; }
+
+            .gauge-wrapper {
+                height: 230px;
+                width: 460px;
+                margin: 0 auto;
+            }
+
+            .gauge-path-bg,
+            .gauge-path-fill {
+                stroke-width: 26;
+            }
+
+            .gauge-value {
+                font-size: 60px;
+                bottom: 32px;
+            }
+
+            .gauge-labels {
+                font-size: 16px;
+                padding: 0 24px;
+            }
+
+            .chart-section {
+                padding-top: 28px;
+                border-top: 1px solid #333;
+            }
+
+            .chart-info {
+                margin-bottom: 20px;
+                padding: 0 4px;
+            }
+
+            .chart-label {
+                font-size: 14px;
+            }
+
+            .chart-label span {
+                font-size: 18px;
+                margin-right: 8px;
+            }
+
+            .chart-visual {
+                height: 220px;
+                gap: 12px;
+                padding: 0 4px;
+            }
+
+            .y-axis {
+                font-size: 12px;
+                padding-right: 10px;
+            }
+
+            .bars-container {
+                gap: 10px;
+            }
+
+            .controls {
+                margin-top: 24px;
+                flex-wrap: nowrap;
+            }
+
+            .btn {
+                padding: 10px 14px;
+                font-size: 13px;
+                flex: none;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .header { margin-top: 20px; }
+            .container {
+                min-height: 100vh;
+                padding-top: 10px;
+                padding-bottom: 10px;
+            }
+
+            .gauges {
+                flex: 0;
+                justify-content: flex-start;
+                margin-top: 50px;
+                margin-bottom: 180px;
+            }
+
+            .chart-section {
+                margin-top: 0;
+                padding-top: 4px;
+            }
+
+            .chart-visual { height: 110px; }
+            .controls { margin-top: 10px; }
+        }
+
+        @media (max-width: 320px) {
+            .container { padding: 15px; }
+            .gauge-value { font-size: 32px; }
+            .chart-big-value { font-size: 28px; }
+            .controls { gap: 3px; }
+            .btn { padding: 4px 6px; font-size: 9px; }
+        }
+    </style>
+</head>
+<body>
+   <!-- GUARD LOGIN: CEK LOCALSTORAGE -->
+    <script>
+      (function () {
+        const isLoggedIn = localStorage.getItem("isLoggedIn");
+        if (isLoggedIn !== "true") {
+          // Kalau belum login, paksa balik ke halaman login (index.html)
+          window.location.href = "/";
+        }
+      })();
+    </script>
+    <!-- BACKDROP MENU -->
+    <div class="backdrop" id="backdrop"></div>
+
+    <!-- SIDE MENU -->
+    <nav class="side-menu" id="sideMenu">
+        <div class="side-menu-header">
+            <span>Menu</span>
+            <button id="closeMenu">&times;</button>
+        </div>
+        <a href="dashboard.html">Beranda</a>
+        <a href="sensor1.html">Sensor 1</a>
+        <a href="sensor2.html">Sensor 2</a>
+        <a href="sensor3.html">Sensor 3</a>
+        <a href="excel.html">Excel</a>
+
+        <!-- Kontak + panah -->
+        <button type="button" id="menuKontak" class="menu-toggle">
+            <span>Kontak</span>
+            <span class="menu-arrow" id="menuKontakArrow">▶</span>
+        </button>
+        <div class="contact-info" id="contactInfo">
+            Telp. 087888266699<br>
+            Raynaldo Ananta Wijaya
+        </div>
+
+        <!-- Footer dev -->
+        <div class="menu-footer" style="margin-top:auto;font-size:11px;color:#666;border-top:1px solid #333;padding-top:8px;">
+            dev Raynaldo Ananta Wijaya
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <div>
+                Sensor 1 <span class="dot" id="statusDot">●</span>
+            </div>
+            <!-- HAMBURGER BUTTON -->
+            <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+
+        <div class="gauges">
+            <div class="gauge-unit">
+                <div class="gauge-title">M/min</div>
+                <div class="gauge-wrapper">
+                    <svg class="gauge-svg" viewBox="0 0 260 140">
+                        <path class="gauge-path-bg" d="M 30 110 A 100 100 0 0 1 230 110" />
+                        <path class="gauge-path-fill" id="mminFill" d="M 30 110 A 100 100 0 0 1 230 110" />
+                    </svg>
+                    
+                    <div class="gauge-value" id="mminText">0</div>
+                    
+                    <div class="gauge-labels">
+                        <span>0</span>
+                        <span>250</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <div class="chart-info">
+                <div class="chart-label"><span>●</span> M/min</div>
+                <div class="color-legend">
+                    <div class="legend-item">
+                        <span class="color-dot red"></span>
+                        <span>1-79</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="color-dot yellow"></span>
+                        <span>80-149</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="color-dot green"></span>
+                        <span>150-250</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-visual">
+                <div class="y-axis">
+                    <span>250</span>
+                    <span>188</span>
+                    <span>125</span>
+                    <span>62</span>
+                    <span>0</span>
+                </div>
+                <div class="bars-container" id="barsContainer">
+                    <!-- Bars di-generate JS -->
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn active">Live</button>
+                <button class="btn">15min</button>
+                <button class="btn">30min</button>
+                <button class="btn">1h</button>
+                <button class="btn">3h</button>
+                <button class="btn">12h</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT: Firebase + Dashboard Logic -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDbfFC7p7G0KVEFKaKM_V6PkMMjgUA1NQ0",
+    authDomain: "esp32-speed-monitor.firebaseapp.com",
+    databaseURL: "https://esp32-speed-monitor-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "esp32-speed-monitor",
+    storageBucket: "esp32-speed-monitor.firebasestorage.app",
+    messagingSenderId: "885299347088",
+    appId: "1:885299347088:web:b494c68af1e40e23af2215",
+    measurementId: "G-5RKH8TP2BP"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getDatabase(app);
+
+  // --- GAUGE CONFIG ---
+  const MAX_GAUGE = 250;
+  const MAX_CHART = 250;
+  const CIRCUMFERENCE = Math.PI * 100;
+
+  const mminFill      = document.getElementById('mminFill');
+  const mminText      = document.getElementById('mminText');
+  const barsContainer = document.getElementById('barsContainer');
+  const statusDotEl   = document.getElementById('statusDot');
+
+  let dataPoints = Array(10).fill(0);
+
+  // --- ONLINE / OFFLINE (HEARTBEAT) ---
+  let lastUpdateMs = 0;
+  const OFFLINE_TIMEOUT = 10000; // 10 detik tanpa data → offline
+
+  function setOnline()  {
+    if (statusDotEl) statusDotEl.classList.add('online');
+  }
+  function setOffline() {
+    if (statusDotEl) statusDotEl.classList.remove('online');
+  }
+
+  function refreshOnlineStatus() {
+    const now = Date.now();
+    if (now - lastUpdateMs <= OFFLINE_TIMEOUT && lastUpdateMs !== 0) {
+      setOnline();
+    } else {
+      setOffline();
+    }
+  }
+
+  setOffline(); // default
+
+  function getColorForValue(value) {
+    if (value >= 150) return '#00e676';
+    if (value >= 80)  return '#ffeb3b';
+    if (value > 0)    return '#ff5252';
+    return '#555555';
+  }
+
+  function updateGauge(fillEl, textEl, val) {
+    let v = Math.max(0, Math.min(val, MAX_GAUGE));
+    let percent = v / MAX_GAUGE;
+    let offset = CIRCUMFERENCE * (1 - percent);
+
+    const color = getColorForValue(v);
+    if (fillEl) fillEl.style.stroke = color;
+    if (textEl) {
+      textEl.style.color = color;
+      textEl.style.textShadow = `0 0 15px ${color}40`;
+      textEl.textContent = Math.round(v);
+    }
+    if (fillEl) fillEl.style.strokeDashoffset = offset;
+  }
+
+  function renderChart() {
+    if (!barsContainer) return;
+    barsContainer.innerHTML = '';
+    dataPoints.forEach(dp => {
+      const bar = document.createElement('div');
+      bar.className = 'bar';
+      const h = (dp / MAX_CHART) * 100;
+      bar.style.height = `${Math.min(h,100)}%`;
+      bar.style.backgroundColor = getColorForValue(dp);
+      barsContainer.appendChild(bar);
+    });
+  }
+
+  renderChart();
+  updateGauge(mminFill, mminText, 0);
+
+  // --- LISTENER FIREBASE ---
+  const liveRef = ref(db, 'sensor1/live');
+
+  onValue(liveRef, (snap) => {
+    const data = snap.val() || {};
+
+    // setiap ada data baru → update timestamp heartbeat
+    lastUpdateMs = Date.now();
+    refreshOnlineStatus();
+
+    const rawSpeed = (typeof data.speed === 'number') ? data.speed : 0;
+    const speed    = Math.max(0, Math.min(rawSpeed, MAX_GAUGE));
+
+    updateGauge(mminFill, mminText, speed);
+    dataPoints.shift();
+    dataPoints.push(speed);
+    renderChart();
+  });
+
+  // cek online/offline tiap 1 detik
+  setInterval(refreshOnlineStatus, 1000);
+
+  // --- MENU / UI LAINNYA ---
+  const hamburgerBtn    = document.getElementById('hamburgerBtn');
+  const sideMenu        = document.getElementById('sideMenu');
+  const backdrop        = document.getElementById('backdrop');
+  const closeMenu       = document.getElementById('closeMenu');
+  const menuKontak      = document.getElementById('menuKontak');
+  const contactInfo     = document.getElementById('contactInfo');
+  const menuKontakArrow = document.getElementById('menuKontakArrow');
+
+  function openMenu() {
+    if (!sideMenu || !backdrop) return;
+    sideMenu.classList.add('open');
+    backdrop.classList.add('show');
+  }
+
+  function closeMenuFn() {
+    if (!sideMenu || !backdrop) return;
+    sideMenu.classList.remove('open');
+    backdrop.classList.remove('show');
+  }
+
+  if (hamburgerBtn) hamburgerBtn.addEventListener('click', openMenu);
+  if (closeMenu)    closeMenu.addEventListener('click', closeMenuFn);
+  if (backdrop)     backdrop.addEventListener('click', closeMenuFn);
+
+  if (menuKontak && contactInfo && menuKontakArrow) {
+    menuKontak.addEventListener('click', function(e) {
+      e.stopPropagation(); 
+      const isShown = contactInfo.classList.toggle('show');
+      if (isShown) {
+        menuKontakArrow.textContent = '▼';
+        menuKontak.style.backgroundColor = 'rgba(0, 230, 118, 0.2)';
+        menuKontak.style.color = '#00e676';
+      } else {
+        menuKontakArrow.textContent = '▶';
+        menuKontak.style.backgroundColor = '';
+        menuKontak.style.color = '#ddd';
+      }
+    });
+  }
+
+  document.addEventListener('click', function(e) {
+    if (contactInfo && contactInfo.classList.contains('show') && 
+        menuKontak && !menuKontak.contains(e.target) && 
+        !contactInfo.contains(e.target)) {
+      contactInfo.classList.remove('show');
+      if (menuKontakArrow) menuKontakArrow.textContent = '▶';
+      if (menuKontak) {
+        menuKontak.style.backgroundColor = '';
+        menuKontak.style.color = '#ddd';
+      }
+    }
+  });
+</script>
+</body>
+</html>

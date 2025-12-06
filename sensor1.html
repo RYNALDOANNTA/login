@@ -664,7 +664,7 @@
     </div>
 
     <!-- SCRIPT: Dashboard Logic via Backend API -->
-    <script>
+ <script>
   // --- GAUGE + CHART CONFIG ---
   const MAX_GAUGE = 250;
   const MAX_CHART = 250;
@@ -677,10 +677,11 @@
 
   let dataPoints = Array(10).fill(0);
 
-  // ONLINE / OFFLINE (HEARTBEAT)
-  let lastUpdateMs = 0;
-  let hasReceivedData = false;   // ⬅️ FLAG BARU: belum pernah dapat data
-  const OFFLINE_TIMEOUT = 10000; // 10 detik
+  // STATE ONLINE / OFFLINE
+  let hasReceivedData   = false;   // pernah dapat data atau belum
+  let currentSpeed      = 0;       // speed terakhir yang ditampilkan
+  let lastNonZeroMs     = 0;       // kapan terakhir speed > 0
+  const ZERO_OFF_TIMEOUT = 30000;  // 30 detik di 0 → OFFLINE (ubah kalau mau)
 
   function setOnline() {
     if (statusDotEl) statusDotEl.classList.add('online');
@@ -690,17 +691,20 @@
   }
 
   function refreshOnlineStatus() {
-    // Kalau BELUM PERNAH dapat data → paksa OFF / abu-abu
+    // Belum pernah dapat data sama sekali
     if (!hasReceivedData) {
       setOffline();
       return;
     }
 
     const now = Date.now();
-    if (now - lastUpdateMs <= OFFLINE_TIMEOUT) {
-      setOnline();
-    } else {
+
+    // Kalau speed sekarang 0 dan sudah lama tidak ada speed > 0
+    if (currentSpeed === 0 && lastNonZeroMs > 0 && (now - lastNonZeroMs > ZERO_OFF_TIMEOUT)) {
       setOffline();
+    } else {
+      // Kalau speed > 0, atau baru saja turun ke 0 (belum lewat timeout)
+      setOnline();
     }
   }
 
@@ -747,44 +751,54 @@
 
   // --- AMBIL DATA DARI BACKEND /api/sensor1-live ---
   async function fetchLive() {
-  try {
-    const res = await fetch('/api/sensor1-live?t=' + Date.now(), {
-      cache: 'no-store',
-    });
+    try {
+      const res = await fetch('/api/sensor1-live?t=' + Date.now(), {
+        cache: 'no-store',
+      });
 
-    console.log('Status /api/sensor1-live:', res.status);
-    const data = await res.json().catch(() => ({}));
-    console.log('JSON /api/sensor1-live:', data);
+      console.log('Status /api/sensor1-live:', res.status);
+      const data = await res.json().catch(() => ({}));
+      console.log('JSON /api/sensor1-live:', data);
 
-    // Backend: { ok: true, speed: <number> }
-    if (!res.ok || !data || data.ok !== true) {
-      return;
+      // Backend: { ok: true, speed: <number> }
+      if (!res.ok || !data || data.ok !== true) {
+        return;
+      }
+
+      const rawSpeed =
+        typeof data.speed === 'number'
+          ? data.speed
+          : Number(data.speed) || 0;
+
+      const speed = Math.max(0, Math.min(rawSpeed, MAX_GAUGE));
+
+      // Update state
+      hasReceivedData = true;
+      currentSpeed = speed;
+
+      // Kalau speed > 0, catat waktu terakhir ada speed
+      if (speed > 0) {
+        lastNonZeroMs = Date.now();
+      }
+
+      // Update status online/offline
+      refreshOnlineStatus();
+
+      // Update tampilan gauge + chart
+      updateGauge(mminFill, mminText, speed);
+      dataPoints.shift();
+      dataPoints.push(speed);
+      renderChart();
+    } catch (err) {
+      console.error('Error fetching /api/sensor1-live:', err);
     }
-
-    const rawSpeed =
-      typeof data.speed === 'number'
-        ? data.speed
-        : Number(data.speed) || 0;
-
-    const speed = Math.max(0, Math.min(rawSpeed, MAX_GAUGE));
-
-    hasReceivedData = true;
-    lastUpdateMs = Date.now();
-
-    refreshOnlineStatus();
-
-    updateGauge(mminFill, mminText, speed);
-    dataPoints.shift();
-    dataPoints.push(speed);
-    renderChart();
-  } catch (err) {
-    console.error('Error fetching /api/sensor1-live:', err);
   }
-}
 
-
+  // Panggil pertama kali
   fetchLive();
-  setInterval(fetchLive, 10000);       // ambil data tiap 1 detik
+  // Ambil data tiap 10 detik (sama dengan interval kirim Firebase di ESP)
+  setInterval(fetchLive, 10000);
+  // Cek offline/online tiap detik
   setInterval(refreshOnlineStatus, 1000);
 
   // --- MENU / UI LAINNYA ---

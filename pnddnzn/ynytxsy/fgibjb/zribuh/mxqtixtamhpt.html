@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Preview Spreadsheet</title>
+  <link rel="stylesheet" href="../../../../assets/css/dvzacdas/lgwrfadbvg/vavndklymtcm.css">
+
+    <link rel="stylesheet" href="../../../../assets/css/vtuyayzueb/mttmavi/lhpbyrxwek/qgqzgytigbhb.css">
+    <link rel="stylesheet" href="../../../../assets/css/nqfmqscr/bejeecsaeozd.css">
+    <link rel="stylesheet" href="../../../../assets/css/hoznthwtaa/ssqbp/cqbdcmhq/pwhuymxvamqi.css">
+    <link rel="stylesheet" href="../../../../assets/css/uodpgr/vodbjcgo/gioxz/jwqqbnigqytq.css">
+    <link rel="stylesheet" href="../../../../assets/css/ljkxyvkt/rvawcakfpobq.css">
+    <link rel="stylesheet" href="../../../../assets/css/euswtojl/jreoqvsicxzz.css">
+    <link rel="stylesheet" href="../../../../assets/css/aevpkzuil/gunyq/fdimjr/hpkiquzonzoi.css">
+    <script src="../../../../assets/js/aafynpvi/wxifcfdwfllo.js"></script>
+    <script src="../../../../assets/js/bajnigrbpf/yadquzpf/kgyzgckwidec.js"></script>
+    <script src="../../../../assets/js/bvwdmiep/tqzmcp/ouokkjspalvc.js"></script>
+    <script src="../../../../assets/js/lkpez/yhlwskpptlcm.js"></script>
+    <script src="../../../../assets/js/sxuqmhrr/mwqzuos/ubrmfel/qdrziecvctvt.js"></script>
+    <script src="../../../../assets/js/cichk/ozknof/jeoqsugnubki.js"></script>
+    <script src="../../../../assets/js/hrsdst/dfsjnidwd/kvvmawdndvuh.js"></script>
+</head>
+<body>
+   
+    <script>
+      (function () {
+        const isLoggedIn = localStorage.getItem("isLoggedIn");
+        if (isLoggedIn !== "true") {
+          // Kalau belum login, paksa balik ke halaman login (index.html)
+          window.location.href = "/";
+        }
+      })();
+    </script>
+  <div class="topbar">
+    <button class="back" id="backBtn">
+      <span class="back-arrow">←</span>
+      <span>Back</span>
+    </button>
+    <div class="page-title">Preview Spreadsheet</div>
+  </div>
+
+  <div class="iframewrap" id="frameBox">
+    
+  </div>
+
+  <script>
+    function qs(name) {
+      const params = new URLSearchParams(location.search);
+      return params.get(name);
+    }
+    
+    const encoded = qs('u');
+    const frameBox = document.getElementById('frameBox');
+
+    if (!encoded) {
+      frameBox.innerHTML = '<div class="warning">Tidak ada file yang diberikan. Kembali ke halaman sebelumnya.</div>';
+    } else {
+      try {
+        const pubUrl = decodeURIComponent(encoded);
+        
+        
+        if (!pubUrl.startsWith('https://')) {
+          frameBox.innerHTML = '<div class="warning">URL tidak valid atau tidak aman.</div>';
+        } else {
+         
+          const ifr = document.createElement('iframe');
+          ifr.src = pubUrl;
+          ifr.loading = 'lazy';
+          frameBox.appendChild(ifr);
+          
+          
+          ifr.onerror = function() {
+            frameBox.innerHTML = `
+              <div class="warning">
+                <p>Gagal memuat spreadsheet.</p>
+                <p>Mungkin spreadsheet tidak tersedia atau tidak di-publikasikan dengan benar.</p>
+              </div>`;
+          };
+        }
+      } catch(e) {
+        frameBox.innerHTML = '<div class="warning">URL tidak dapat dibuka.</div>';
+      }
+    }
+
+  
+    document.getElementById('backBtn').addEventListener('click', () => {
+      
+      if (history.length > 1) {
+        history.back();
+      } else {
+        location.href = '../../../../zbaqr/nszlgvp/vpkjh/jqtrldzoiqmf.html';
+      }
+    });
+
+   
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        document.getElementById('backBtn').click();
+      }
+    });
+  </script>
+</body>
+</html>

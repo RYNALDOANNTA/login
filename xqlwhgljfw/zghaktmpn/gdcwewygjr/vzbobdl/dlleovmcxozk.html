@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Dashboard - Sensor 2</title>
+    <link rel="stylesheet" href="../../../../assets/css/kulwfbc/odydofu/bbdei/blmzllhlgtrc.css">
+
+    <link rel="stylesheet" href="../../../../assets/css/qennbtul/sgjjdafjlinu.css">
+    <link rel="stylesheet" href="../../../../assets/css/bcjxjgsntj/dxitmech/cwzlxfovctty.css">
+    <link rel="stylesheet" href="../../../../assets/css/bgrlhxapen/pxhlbjres/mueink/mcwswnrgpjyc.css">
+    <link rel="stylesheet" href="../../../../assets/css/haenwpxdk/pptogrfd/ikzkv/fkronbxugwdf.css">
+    <link rel="stylesheet" href="../../../../assets/css/lwqofk/okhdcjrqnegr.css">
+    <link rel="stylesheet" href="../../../../assets/css/xvovfws/eafcliom/cndqpvlex/vctwemggsyke.css">
+    <link rel="stylesheet" href="../../../../assets/css/rmddfhwbg/uchmgclasudc.css">
+    <script src="../../../../assets/js/apnnzvexj/eadeugfyctid.js"></script>
+    <script src="../../../../assets/js/lexdqfbb/lskzstvnmidu.js"></script>
+    <script src="../../../../assets/js/haixw/godxlnfks/dincpwyoyxia.js"></script>
+    <script src="../../../../assets/js/rxjozzahdr/ypejxuwygdgc.js"></script>
+    <script src="../../../../assets/js/ifqlwen/pvzqar/gwaioasp/wvfhsbhjbdfg.js"></script>
+    <script src="../../../../assets/js/ilvvvgvx/spahdyxii/jhinnvmjdpuy.js"></script>
+    <script src="../../../../assets/js/eoxqwftwdm/ifiwnjmgkofm.js"></script>
+</head>
+<body>
+   
+    <script>
+      (function () {
+        const isLoggedIn = localStorage.getItem("isLoggedIn");
+        if (isLoggedIn !== "true") {
+          // Kalau belum login, paksa balik ke halaman login (index.html)
+          window.location.href = "/";
+        }
+      })();
+    </script>
+    
+    <div class="backdrop" id="backdrop"></div>
+
+    
+    <nav class="side-menu" id="sideMenu">
+        <div class="side-menu-header">
+            <span>Menu</span>
+            <button id="closeMenu">&times;</button>
+        </div>
+        <a href="../../../../emagmcuel/rnwddscdto/axxpchafgv/iqqcjyiduequ.html">Beranda</a>
+        <a href="../../../../tqlnbnmpq/mqnohfh/llngm/brxaenrmkoso.html">Sensor 1</a>
+        <a href="dlleovmcxozk.html">Sensor 2</a>
+        <a href="../../../../bxcolhuarv/mrsjperitz/pxwwdvexzajp.html">Sensor 3</a>
+        <a href="../../../../bkoqinzyjr/ayfbuwff/dnggnmhc/wlhue/ntjehvovqkpj.html">Excel</a>
+
+        
+        <button type="button" id="menuKontak" class="menu-toggle">
+            <span>Kontak</span>
+            <span class="menu-arrow" id="menuKontakArrow">▶</span>
+        </button>
+        <div class="contact-info" id="contactInfo">
+            Telp. 087888266699<br>
+            Raynaldo Ananta Wijaya
+        </div>
+
+        
+        <div class="menu-footer" style="margin-top:auto;font-size:11px;color:#666;border-top:1px solid #333;padding-top:8px;">
+            dev Raynaldo Ananta Wijaya
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <div>
+                Sensor 2 <span class="dot">●</span>
+            </div>
+            <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+
+        <div class="coming-soon">
+            <div class="coming-soon-icon">🚧</div>
+            <h1>Coming Soon</h1>
+            <p>Sensor 2 sedang dalam tahap persiapan. Akan segera hadir untuk monitoring yang lebih lengkap.</p>
+            <a href="../../../../tqlnbnmpq/mqnohfh/llngm/brxaenrmkoso.html" class="back-btn">Kembali ke Sensor 1</a>
+        </div>
+    </div>
+
+    <script>
+        
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const sideMenu = document.getElementById('sideMenu');
+        const backdrop = document.getElementById('backdrop');
+        const closeMenu = document.getElementById('closeMenu');
+        const menuKontak = document.getElementById('menuKontak');
+        const contactInfo = document.getElementById('contactInfo');
+        const menuKontakArrow = document.getElementById('menuKontakArrow');
+
+        function openMenu() {
+            if (!sideMenu || !backdrop) return;
+            sideMenu.classList.add('open');
+            backdrop.classList.add('show');
+        }
+
+        function closeMenuFn() {
+            if (!sideMenu || !backdrop) return;
+            sideMenu.classList.remove('open');
+            backdrop.classList.remove('show');
+        }
+
+        if (hamburgerBtn) hamburgerBtn.addEventListener('click', openMenu);
+        if (closeMenu) closeMenu.addEventListener('click', closeMenuFn);
+        if (backdrop) backdrop.addEventListener('click', closeMenuFn);
+
+        
+        if (menuKontak && contactInfo && menuKontakArrow) {
+            menuKontak.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isShown = contactInfo.classList.toggle('show');
+                if (isShown) {
+                    menuKontakArrow.textContent = '▼';
+                    menuKontak.style.backgroundColor = 'rgba(0, 230, 118, 0.2)';
+                    menuKontak.style.color = '#00e676';
+                } else {
+                    menuKontakArrow.textContent = '▶';
+                    menuKontak.style.backgroundColor = '';
+                    menuKontak.style.color = '#ddd';
+                }
+            });
+        }
+
+       
+        document.addEventListener('click', function(e) {
+            if (contactInfo && contactInfo.classList.contains('show') && 
+                menuKontak && !menuKontak.contains(e.target) && 
+                !contactInfo.contains(e.target)) {
+                contactInfo.classList.remove('show');
+                if (menuKontakArrow) menuKontakArrow.textContent = '▶';
+                if (menuKontak) {
+                    menuKontak.style.backgroundColor = '';
+                    menuKontak.style.color = '#ddd';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,16 +1,21 @@
+# Aktifkan mod_rewrite
 RewriteEngine On
 
-# Dashboard (redirect ke kode acak)
-Redirect 301 /oyjyx/urervflc/rzgih/pffmrkzdmgqa.html /aosnsianaiwbdhdksnn-nsbdjsmak-lslslsk
+# =========================================
+# REDIRECT URL LAMA → KODE ACAK (301)
+# =========================================
+
+# Dashboard
+RewriteRule ^oyjyx/urervflc/rzgih/pffmrkzdmgqa\.html$ /aosnsianaiwbdhdksnn-nsbdjsmak-lslslsk [R=301,L]
 
 # Sensor 1
-Redirect 301 /ackjq/jozpiwno/aubrst/dckdedqwzjpp.html /pqowmskamxllsksnwiw-anskskqowpq-qpqpqpq
+RewriteRule ^ackjq/jozpiwno/aubrst/dckdedqwzjpp\.html$ /pqowmskamxllsksnwiw-anskskqowpq-qpqpqpq [R=301,L]
 
 # Sensor 2
-Redirect 301 /oymren/avwftu/ecfhorcqx/qoplpmjojl/actgcefmozva.html /xnskslqpaowpqmslals-skslalsowpwq-qpqpwks
+RewriteRule ^oymren/avwftu/ecfhorcqx/qoplpmjojl/actgcefmozva\.html$ /xnskslqpaowpqmslals-skslalsowpwq-qpqpwks [R=301,L]
 
 # Sensor 3
-Redirect 301 /oimiiwasyx/zavqdnan/awafbiatqg/xxzaaxdkiign.html /lqmsosksnwoqpqpalsks-skslslalqpqp-zmxnsls
+RewriteRule ^oimiiwasyx/zavqdnan/awafbiatqg/xxzaaxdkiign\.html$ /lqmsosksnwoqpqpalsks-skslslalqpqp-zmxnsls [R=301,L]
 
 # Excel
-Redirect 301 /zbaqr/nszlgvp/vpkjh/jqtrldzoiqmf.html /akslsnwoqpqpqpqmslal-siskskqpqpall-qpqpals
+RewriteRule ^zbaqr/nszlgvp/vpkjh/jqtrldzoiqmf\.html$ /akslsnwoqpqpqpqmslal-siskskqpqpall-qpqpals [R=301,L]

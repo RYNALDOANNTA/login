@@ -1,0 +1,51 @@
+{
+  "rewrites": [
+    {
+      "source": "/aosnsianaiwbdhdksnn-nsbdjsmak-lslslsk",
+      "destination": "/oyjyx/urervflc/rzgih/pffmrkzdmgqa.html"
+    },
+    {
+      "source": "/pqowmskamxllsksnwiw-anskskqowpq-qpqpqpq",
+      "destination": "/ackjq/jozpiwno/aubrst/dckdedqwzjpp.html"
+    },
+    {
+      "source": "/xnskslqpaowpqmslals-skslalsowpwq-qpqpwks",
+      "destination": "/oymren/avwftu/ecfhorcqx/qoplpmjojl/actgcefmozva.html"
+    },
+    {
+      "source": "/lqmsosksnwoqpqpalsks-skslslalqpqp-zmxnsls",
+      "destination": "/oimiiwasyx/zavqdnan/awafbiatqg/xxzaaxdkiign.html"
+    },
+    {
+      "source": "/akslsnwoqpqpqpqmslal-siskskqpqpall-qpqpals",
+      "destination": "/zbaqr/nszlgvp/vpkjh/jqtrldzoiqmf.html"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/oyjyx/urervflc/rzgih/pffmrkzdmgqa.html",
+      "destination": "/aosnsianaiwbdhdksnn-nsbdjsmak-lslslsk",
+      "permanent": true
+    },
+    {
+      "source": "/ackjq/jozpiwno/aubrst/dckdedqwzjpp.html",
+      "destination": "/pqowmskamxllsksnwiw-anskskqowpq-qpqpqpq",
+      "permanent": true
+    },
+    {
+      "source": "/oymren/avwftu/ecfhorcqx/qoplpmjojl/actgcefmozva.html",
+      "destination": "/xnskslqpaowpqmslals-skslalsowpwq-qpqpwks",
+      "permanent": true
+    },
+    {
+      "source": "/oimiiwasyx/zavqdnan/awafbiatqg/xxzaaxdkiign.html",
+      "destination": "/lqmsosksnwoqpqpalsks-skslslalqpqp-zmxnsls",
+      "permanent": true
+    },
+    {
+      "source": "/zbaqr/nszlgvp/vpkjh/jqtrldzoiqmf.html",
+      "destination": "/akslsnwoqpqpqpqmslal-siskskqpqpall-qpqpals",
+      "permanent": true
+    }
+  ]
+}

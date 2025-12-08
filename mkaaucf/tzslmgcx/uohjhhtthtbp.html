@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Dashboard - Sensor 1</title>
+    <link rel="stylesheet" href="../../assets/css/cehgbmfsk/cubmksrvzbap.css">
+
+<link rel="stylesheet" href="../../assets/css/mxdnwujm/kijgcavh/dyxffm/ukbxwiajqjhj.css">
+<link rel="stylesheet" href="../../assets/css/uvvxz/erclte/nbldd/afwiajtedcmm.css">
+<link rel="stylesheet" href="../../assets/css/xjhknuuuit/iznalfvmprre.css">
+<link rel="stylesheet" href="../../assets/css/gyspbsi/jasmqmpofpnx.css">
+<link rel="stylesheet" href="../../assets/css/zjdewytl/ielavdcb/absubxsl/dkkxhsfdkibh.css">
+<link rel="stylesheet" href="../../assets/css/vwcoknmkdx/fpsckvvb/tgpuv/ljdirgmkuyjz.css">
+<link rel="stylesheet" href="../../assets/css/pylkndnt/hceibmcs/lilhdsoic/nepyudzutixp.css">
+<script src="../../assets/js/rqmokwqk/zitwzv/fqaqtgptizpf.js"></script>
+<script src="../../assets/js/woepqjmts/bxpdm/wqafvxsyvmof.js"></script>
+<script src="../../assets/js/wkawntwxyx/isofbnumzbxw.js"></script>
+<script src="../../assets/js/xmvheisltd/eukhxsjvyt/ywqilcdgtk/btlfacofrkbt.js"></script>
+<script src="../../assets/js/pastudqaa/ihguz/xsqcmsy/ubtsehxacvgz.js"></script>
+<script src="../../assets/js/hlhcbfpme/lhenglvm/qzawgs/yxqthxqketmn.js"></script>
+<script src="../../assets/js/sppxkr/yonsiwwpoery.js"></script>
+</head>
+<body>
+    
+    <script>
+      (function () {
+        const isLoggedIn = localStorage.getItem("isLoggedIn");
+        if (isLoggedIn !== "true") {
+          window.location.href = "../../";
+        }
+      })();
+    </script>
+
+    
+    <div class="backdrop" id="backdrop"></div>
+
+    
+    <nav class="side-menu" id="sideMenu">
+        <div class="side-menu-header">
+            <span>Menu</span>
+            <button id="closeMenu">&times;</button>
+        </div>
+        <a href="dashboard.html">Beranda</a>
+        <a href="sensor1.html">Sensor 1</a>
+        <a href="sensor2.html">Sensor 2</a>
+        <a href="sensor3.html">Sensor 3</a>
+        <a href="excel.html">Excel</a>
+
+        <button type="button" id="menuKontak" class="menu-toggle">
+            <span>Kontak</span>
+            <span class="menu-arrow" id="menuKontakArrow">▶</span>
+        </button>
+        <div class="contact-info" id="contactInfo">
+            Telp. 087888266699<br>
+            Raynaldo Ananta Wijaya
+        </div>
+
+        <div class="menu-footer" style="margin-top:auto;font-size:11px;color:#666;border-top:1px solid #333;padding-top:8px;">
+            dev Raynaldo Ananta Wijaya
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <div>
+                Sensor 1 <span class="dot" id="statusDot">●</span>
+            </div>
+            <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+
+        <div class="gauges">
+            <div class="gauge-unit">
+                <div class="gauge-title">M/min</div>
+                <div class="gauge-wrapper">
+                    <svg class="gauge-svg" viewBox="0 0 260 140">
+                        <path class="gauge-path-bg" d="M 30 110 A 100 100 0 0 1 230 110" />
+                        <path class="gauge-path-fill" id="mminFill" d="M 30 110 A 100 100 0 0 1 230 110" />
+                    </svg>
+                    
+                    <div class="gauge-value" id="mminText">0</div>
+                    
+                    <div class="gauge-labels">
+                        <span>0</span>
+                        <span>250</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <div class="chart-info">
+                <div class="chart-label"><span>●</span> M/min</div>
+                <div class="color-legend">
+                    <div class="legend-item">
+                        <span class="color-dot red"></span>
+                        <span>1-79</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="color-dot yellow"></span>
+                        <span>80-149</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="color-dot green"></span>
+                        <span>150-250</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-visual">
+                <div class="y-axis">
+                    <span>250</span>
+                    <span>188</span>
+                    <span>125</span>
+                    <span>62</span>
+                    <span>0</span>
+                </div>
+                <div class="bars-container" id="barsContainer">
+                    
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn active">Live</button>
+                <button class="btn">15min</button>
+                <button class="btn">30min</button>
+                <button class="btn">1h</button>
+                <button class="btn">3h</button>
+                <button class="btn">12h</button>
+            </div>
+        </div>
+    </div>
+
+    
+ <script>
+  // --- GAUGE + CHART CONFIG ---
+  const MAX_GAUGE = 250;
+  const MAX_CHART = 250;
+  const CIRCUMFERENCE = Math.PI * 100;
+
+  const mminFill      = document.getElementById('mminFill');
+  const mminText      = document.getElementById('mminText');
+  const barsContainer = document.getElementById('barsContainer');
+  const statusDotEl   = document.getElementById('statusDot');
+
+    let dataPoints = Array(10).fill(0);
+
+  // STATE ONLINE / OFFLINE
+  let lastNonZeroMs     = 0;        // kapan terakhir speed > 0
+  const ZERO_OFF_TIMEOUT = 10000;   // 30 detik tanpa speed > 0 → OFFLINE
+
+  function setOnline() {
+    if (statusDotEl) statusDotEl.classList.add('online');
+  }
+  function setOffline() {
+    if (statusDotEl) statusDotEl.classList.remove('online');
+  }
+
+  function refreshOnlineStatus() {
+    const now = Date.now();
+
+    // Kalau BELUM PERNAH ada speed > 0 sama sekali -> OFF
+    if (lastNonZeroMs === 0) {
+      setOffline();
+      return;
+    }
+
+    // Kalau sudah terlalu lama tidak ada speed > 0 -> OFF
+    if (now - lastNonZeroMs > ZERO_OFF_TIMEOUT) {
+      setOffline();
+    } else {
+      // Dalam 30 detik terakhir pernah ada speed > 0 -> ON
+      setOnline();
+    }
+  }
+
+  // Kondisi awal: paksa OFF dulu
+  setOffline();
+
+  function getColorForValue(value) {
+    if (value >= 150) return '#00e676';
+    if (value >= 80)  return '#ffeb3b';
+    if (value > 0)    return '#ff5252';
+    return '#555555';
+  }
+
+  function updateGauge(fillEl, textEl, val) {
+    let v = Math.max(0, Math.min(val, MAX_GAUGE));
+    let percent = v / MAX_GAUGE;
+    let offset = CIRCUMFERENCE * (1 - percent);
+
+    const color = getColorForValue(v);
+    if (fillEl) fillEl.style.stroke = color;
+    if (textEl) {
+      textEl.style.color = color;
+      textEl.style.textShadow = `0 0 15px ${color}40`;
+      textEl.textContent = Math.round(v);
+    }
+    if (fillEl) fillEl.style.strokeDashoffset = offset;
+  }
+
+  function renderChart() {
+    if (!barsContainer) return;
+    barsContainer.innerHTML = '';
+    dataPoints.forEach(dp => {
+      const bar = document.createElement('div');
+      bar.className = 'bar';
+      const h = (dp / MAX_CHART) * 100;
+      bar.style.height = `${Math.min(h,100)}%`;
+      bar.style.backgroundColor = getColorForValue(dp);
+      barsContainer.appendChild(bar);
+    });
+  }
+
+  renderChart();
+  updateGauge(mminFill, mminText, 0);
+
+  // --- AMBIL DATA DARI BACKEND /api/sensor1-live ---
+  async function fetchLive() {
+    try {
+      const res = await fetch('/api/sensor1-live?t=' + Date.now(), {
+        cache: 'no-store',
+      });
+
+      console.log('Status /api/sensor1-live:', res.status);
+      const data = await res.json().catch(() => ({}));
+      console.log('JSON /api/sensor1-live:', data);
+
+      // Backend: { ok: true, speed: <number> }
+      if (!res.ok || !data || data.ok !== true) {
+        return;
+      }
+
+      const rawSpeed =
+        typeof data.speed === 'number'
+          ? data.speed
+          : Number(data.speed) || 0;
+
+      const speed = Math.max(0, Math.min(rawSpeed, MAX_GAUGE));
+
+        // Kalau speed > 0, catat waktu terakhir ada speed
+      if (speed > 0) {
+        lastNonZeroMs = Date.now();
+      }
+
+      // Update status online/offline
+      refreshOnlineStatus();
+
+
+      // Update tampilan gauge + chart
+      updateGauge(mminFill, mminText, speed);
+      dataPoints.shift();
+      dataPoints.push(speed);
+      renderChart();
+    } catch (err) {
+      console.error('Error fetching /api/sensor1-live:', err);
+    }
+  }
+
+  // Panggil pertama kali
+  fetchLive();
+  // Ambil data tiap 10 detik (sama dengan interval kirim Firebase di ESP)
+  setInterval(fetchLive, 10000);
+  // Cek offline/online tiap detik
+  setInterval(refreshOnlineStatus, 1000);
+
+  // --- MENU / UI LAINNYA ---
+  const hamburgerBtn    = document.getElementById('hamburgerBtn');
+  const sideMenu        = document.getElementById('sideMenu');
+  const backdrop        = document.getElementById('backdrop');
+  const closeMenu       = document.getElementById('closeMenu');
+  const menuKontak      = document.getElementById('menuKontak');
+  const contactInfo     = document.getElementById('contactInfo');
+  const menuKontakArrow = document.getElementById('menuKontakArrow');
+
+  function openMenu() {
+    if (!sideMenu || !backdrop) return;
+    sideMenu.classList.add('open');
+    backdrop.classList.add('show');
+  }
+
+  function closeMenuFn() {
+    if (!sideMenu || !backdrop) return;
+    sideMenu.classList.remove('open');
+    backdrop.classList.remove('show');
+  }
+
+  if (hamburgerBtn) hamburgerBtn.addEventListener('click', openMenu);
+  if (closeMenu)    closeMenu.addEventListener('click', closeMenuFn);
+  if (backdrop)     backdrop.addEventListener('click', closeMenuFn);
+
+  if (menuKontak && contactInfo && menuKontakArrow) {
+    menuKontak.addEventListener('click', function(e) {
+      e.stopPropagation(); 
+      const isShown = contactInfo.classList.toggle('show');
+      if (isShown) {
+        menuKontakArrow.textContent = '▼';
+        menuKontak.style.backgroundColor = 'rgba(0, 230, 118, 0.2)';
+        menuKontak.style.color = '#00e676';
+      } else {
+        menuKontakArrow.textContent = '▶';
+        menuKontak.style.backgroundColor = '';
+        menuKontak.style.color = '#ddd';
+      }
+    });
+  }
+
+  document.addEventListener('click', function(e) {
+    if (contactInfo && contactInfo.classList.contains('show') && 
+        menuKontak && !menuKontak.contains(e.target) && 
+        !contactInfo.contains(e.target)) {
+      contactInfo.classList.remove('show');
+      if (menuKontakArrow) menuKontakArrow.textContent = '▶';
+      if (menuKontak) {
+        menuKontak.style.backgroundColor = '';
+        menuKontak.style.color = '#ddd';
+      }
+    }
+  });
+</script>
+</body>
+</html>

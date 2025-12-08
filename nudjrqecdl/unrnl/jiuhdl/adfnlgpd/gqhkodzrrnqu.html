@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard - Excel (Sensors)</title>
+  <link rel="stylesheet" href="../../../../assets/css/lcbhhe/mcvclydkktub.css">
+
+<link rel="stylesheet" href="../../../../assets/css/mxdnwujm/kijgcavh/dyxffm/ukbxwiajqjhj.css">
+<link rel="stylesheet" href="../../../../assets/css/uvvxz/erclte/nbldd/afwiajtedcmm.css">
+<link rel="stylesheet" href="../../../../assets/css/xjhknuuuit/iznalfvmprre.css">
+<link rel="stylesheet" href="../../../../assets/css/gyspbsi/jasmqmpofpnx.css">
+<link rel="stylesheet" href="../../../../assets/css/zjdewytl/ielavdcb/absubxsl/dkkxhsfdkibh.css">
+<link rel="stylesheet" href="../../../../assets/css/vwcoknmkdx/fpsckvvb/tgpuv/ljdirgmkuyjz.css">
+<link rel="stylesheet" href="../../../../assets/css/pylkndnt/hceibmcs/lilhdsoic/nepyudzutixp.css">
+<script src="../../../../assets/js/rqmokwqk/zitwzv/fqaqtgptizpf.js"></script>
+<script src="../../../../assets/js/woepqjmts/bxpdm/wqafvxsyvmof.js"></script>
+<script src="../../../../assets/js/wkawntwxyx/isofbnumzbxw.js"></script>
+<script src="../../../../assets/js/xmvheisltd/eukhxsjvyt/ywqilcdgtk/btlfacofrkbt.js"></script>
+<script src="../../../../assets/js/pastudqaa/ihguz/xsqcmsy/ubtsehxacvgz.js"></script>
+<script src="../../../../assets/js/hlhcbfpme/lhenglvm/qzawgs/yxqthxqketmn.js"></script>
+<script src="../../../../assets/js/sppxkr/yonsiwwpoery.js"></script>
+</head>
+<body>
+   
+    <script>
+      (function () {
+        const isLoggedIn = localStorage.getItem("isLoggedIn");
+        if (isLoggedIn !== "true") {
+          // Kalau belum login, paksa balik ke halaman login (index.html)
+          window.location.href = "../../../../";
+        }
+      })();
+    </script>
+  
+  <div class="backdrop" id="backdrop"></div>
+
+  
+  <nav class="side-menu" id="sideMenu">
+    <div class="side-menu-header">
+      <span>Menu</span>
+      <button id="closeMenu">&times;</button>
+    </div>
+
+    <a href="dashboard.html">Beranda</a>
+    <a href="sensor1.html">Sensor 1</a>
+    <a href="sensor2.html">Sensor 2</a>
+    <a href="sensor3.html">Sensor 3</a>
+    <a href="excel.html">Excel</a>
+
+    
+    <button type="button" id="menuKontak" class="menu-toggle">
+      <span>Kontak</span>
+      <span class="menu-arrow" id="menuKontakArrow">▶</span>
+    </button>
+    <div class="contact-info" id="contactInfo">
+      Telp. 087888266699<br>
+      Raynaldo Ananta Wijaya
+    </div>
+
+    <div class="menu-footer" style="margin-top:auto;font-size:11px;color:#666;border-top:1px solid #333;padding-top:8px;">
+      dev Raynaldo Ananta Wijaya
+    </div>
+  </nav>
+
+  <div class="container">
+    
+    <div class="header">
+      <div>Excel</div>
+      <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+
+    <div class="main-content">
+      <div class="page-title">Download & Preview Excel</div>
+      <div class="page-subtitle">Download data sensor dalam format CSV atau preview langsung di browser</div>
+
+      
+      <div class="sensor-card">
+        <div class="card-header">
+          <div class="sensor-title">Sensor 1</div>
+          <div class="buttons-container">
+            
+            <a
+              href="https://script.google.com/macros/s/AKfycbwLojyXTuNcHfgDC6PF5MzjQM3hnZREEqXB3d5R162pqT4TuwVxFNcsLCp1KmIszoNU/exec?sheet=sensor1"
+              target="_blank" rel="noopener"
+            >
+              <button class="btn download">Download</button>
+            </a>
+
+            
+            <button class="btn preview" id="previewS1"
+              data-pub="https://docs.google.com/spreadsheets/d/e/2PACX-1vSOSVHzoJ9bidPUi3Yr6W_4R5F58YWbzG1fbZief7IVOKd2nTYURTYym6xIJHBTvk6cEOyLyYs9xqsN/pubhtml?gid=0&single=true">
+              Preview
+            </button>
+          </div>
+        </div>
+        <div class="info-text">Data real-time dari Sensor 1 dalam format .csv</div>
+      </div>
+
+      
+      <div class="sensor-card">
+        <div class="card-header">
+          <div class="sensor-title">Sensor 2</div>
+          <div class="buttons-container">
+            <a id="dl-s2"
+              href="https://script.google.com/macros/s/AKfycbwLojyXTuNcHfgDC6PF5MzjQM3hnZREEqXB3d5R162pqT4TuwVxFNcsLCp1KmIszoNU/exec?sheet=sensor2"
+              target="_blank" rel="noopener"
+            >
+              <button class="btn download" id="dlBtnS2">Download</button>
+            </a>
+
+            <button class="btn preview" id="previewS2"
+              data-pub="https://docs.google.com/spreadsheets/d/e/2PACX-1vSOSVHzoJ9bidPUi3Yr6W_4R5F58YWbzG1fbZief7IVOKd2nTYURTYym6xIJHBTvk6cEOyLyYs9xqsN/pubhtml?gid=198498487&single=true">
+              Preview
+            </button>
+          </div>
+        </div>
+        <div class="info-text">Data dari Sensor 2 (Coming Soon)</div>
+      </div>
+
+      
+      <div class="sensor-card">
+        <div class="card-header">
+          <div class="sensor-title">Sensor 3</div>
+          <div class="buttons-container">
+            <a id="dl-s3"
+              href="https://script.google.com/macros/s/AKfycbwLojyXTuNcHfgDC6PF5MzjQM3hnZREEqXB3d5R162pqT4TuwVxFNcsLCp1KmIszoNU/exec?sheet=sensor3"
+              target="_blank" rel="noopener"
+            >
+              <button class="btn download" id="dlBtnS3">Download</button>
+            </a>
+
+            <button class="btn preview" id="previewS3"
+              data-pub="https://docs.google.com/spreadsheets/d/e/2PACX-1vSOSVHzoJ9bidPUi3Yr6W_4R5F58YWbzG1fbZief7IVOKd2nTYURTYym6xIJHBTvk6cEOyLyYs9xqsN/pubhtml?gid=1419431819&single=true">
+              Preview
+            </button>
+          </div>
+        </div>
+        <div class="info-text">Data dari Sensor 3 (Coming Soon)</div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+   
+    const hamburgerBtn     = document.getElementById('hamburgerBtn');
+    const sideMenu         = document.getElementById('sideMenu');
+    const backdrop         = document.getElementById('backdrop');
+    const closeMenu        = document.getElementById('closeMenu');
+    const menuKontak       = document.getElementById('menuKontak');
+    const contactInfo      = document.getElementById('contactInfo');
+    const menuKontakArrow  = document.getElementById('menuKontakArrow');
+
+    function openMenu() {
+      sideMenu.classList.add('open');
+      backdrop.classList.add('show');
+    }
+    function closeMenuFn() {
+      sideMenu.classList.remove('open');
+      backdrop.classList.remove('show');
+    }
+
+    hamburgerBtn.addEventListener('click', openMenu);
+    closeMenu.addEventListener('click', closeMenuFn);
+    backdrop.addEventListener('click', closeMenuFn);
+
+   
+    menuKontak.addEventListener('click', function(e){
+      e.stopPropagation();
+      const isShown = contactInfo.classList.toggle('show');
+      if (isShown) {
+        menuKontakArrow.textContent = '▼';
+        menuKontak.style.backgroundColor = 'rgba(0, 230, 118, 0.2)';
+        menuKontak.style.color = '#00e676';
+      } else {
+        menuKontakArrow.textContent = '▶';
+        menuKontak.style.backgroundColor = '';
+        menuKontak.style.color = '#ddd';
+      }
+    });
+
+    
+    document.addEventListener('click', function(e) {
+      if (contactInfo && contactInfo.classList.contains('show') && 
+          menuKontak && !menuKontak.contains(e.target) && 
+          !contactInfo.contains(e.target)) {
+        contactInfo.classList.remove('show');
+        if (menuKontakArrow) menuKontakArrow.textContent = '▶';
+        if (menuKontak) {
+          menuKontak.style.backgroundColor = '';
+          menuKontak.style.color = '#ddd';
+        }
+      }
+    });
+
+   
+    function openFullPreview(pubUrl) {
+      if (!pubUrl || pubUrl.startsWith('http') === false) {
+        alert('Preview belum tersedia atau link tidak valid.');
+        return;
+      }
+      const encoded = encodeURIComponent(pubUrl);
+      window.location.href = '../../../../dnxdiza/fzrcprlvbd/uxyqdhi/sribbbedtmvi.html?u=' + encoded;
+    }
+
+    document.querySelectorAll('.btn.preview').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const pub = btn.getAttribute('data-pub') || '';
+        openFullPreview(pub.trim());
+      });
+    });
+
+    
+    document.getElementById('dlBtnS2').classList.add('disabled');
+    document.getElementById('previewS2').classList.add('disabled');
+    document.getElementById('dlBtnS3').classList.add('disabled');
+    document.getElementById('previewS3').classList.add('disabled');
+
+    
+    document.getElementById('dl-s2').removeAttribute('href');
+    document.getElementById('dl-s3').removeAttribute('href');
+  </script>
+</body>
+</html>

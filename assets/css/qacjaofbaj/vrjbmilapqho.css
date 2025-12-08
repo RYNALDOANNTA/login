@@ -1,0 +1,245 @@
+* { 
+            box-sizing: border-box; 
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 100%;
+            min-height: 100vh;
+            background-color: #1e1e1e;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        
+        .header {
+            font-size: 24px;
+            font-weight: 900;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            letter-spacing: 1px;
+            padding: 0 10px;
+            justify-content: space-between;
+            width: 100%;
+            position: absolute;
+            top: 20px;
+            left: 0;
+            padding: 0 20px;
+            z-index: 100;
+        }
+
+        .header .dot {
+            color: #666666;
+            margin-left: 8px;
+            font-size: 16px;
+            line-height: 0;
+            margin-top: -5px;
+        }
+
+        
+        .hamburger {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .hamburger span {
+            width: 20px;
+            height: 2px;
+            background-color: #ffffff;
+            border-radius: 2px;
+        }
+
+        
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 240px;
+            height: 100vh;
+            background-color: #181818;
+            box-shadow: 2px 0 15px rgba(0,0,0,0.6);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            z-index: 2000;
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .side-menu.open {
+            transform: translateX(0);
+        }
+
+        .side-menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .side-menu-header button {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .side-menu a {
+            text-decoration: none;
+            color: #ddd;
+            font-size: 14px;
+            padding: 8px 6px;
+            border-radius: 6px;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .side-menu a:hover {
+            background-color: #00e676;
+            color: #000;
+        }
+
+        
+        .menu-toggle {
+            background: none;
+            border: none;
+            text-align: left;
+            width: 100%;
+            padding: 8px 6px;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #ddd;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: inherit;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .menu-toggle:hover {
+            background-color: rgba(0, 230, 118, 0.1);
+            color: #fff;
+        }
+
+        .contact-info {
+            font-size: 12px;
+            color: #aaa;
+            padding: 8px 6px 4px 6px;
+            border-left: 2px solid #00e676;
+            margin-left: 10px;
+            margin-bottom: 5px;
+            display: none;
+        }
+
+        .contact-info.show {
+            display: block;
+        }
+
+        .menu-arrow {
+            font-size: 10px;
+        }
+
+        
+        .backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 1500;
+        }
+
+        .backdrop.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        
+        .coming-soon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px 20px;
+            max-width: 500px;
+        }
+
+        .coming-soon-icon {
+            font-size: 80px;
+            margin-bottom: 30px;
+            color: #666;
+        }
+
+        .coming-soon h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .coming-soon p {
+            font-size: 18px;
+            color: #aaa;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+
+        .back-btn {
+            background-color: #00e676;
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            background-color: #00c853;
+        }
+
+        
+        @media (min-width: 768px) {
+            .container { padding: 40px 60px; }
+            .header { 
+                font-size: 32px; 
+                top: 40px;
+                padding: 0 60px;
+            }
+            .coming-soon h1 { font-size: 48px; }
+            .coming-soon p { font-size: 22px; }
+            .coming-soon-icon { font-size: 100px; }
+        }
+
+        @media (max-width: 320px) {
+            .coming-soon h1 { font-size: 28px; }
+            .coming-soon p { font-size: 16px; }
+            .coming-soon-icon { font-size: 60px; }
+            .back-btn { padding: 10px 20px; font-size: 14px; }
+        }

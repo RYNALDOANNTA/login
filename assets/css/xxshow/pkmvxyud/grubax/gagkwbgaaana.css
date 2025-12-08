@@ -1,0 +1,289 @@
+* { box-sizing: border-box; }
+
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 100%;
+            min-height: 100vh;
+            background-color: #1e1e1e;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        
+        .header {
+            font-size: 24px;
+            font-weight: 900;
+            margin-bottom: 30px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            letter-spacing: 1px;
+            padding: 0 10px;
+            justify-content: space-between;
+        }
+
+        
+        .hamburger {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .hamburger span {
+            width: 20px;
+            height: 2px;
+            background-color: #ffffff;
+            border-radius: 2px;
+            transition: 0.3s;
+        }
+
+        
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 240px;
+            height: 100vh;
+            background-color: #181818;
+            box-shadow: 2px 0 15px rgba(0,0,0,0.6);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            z-index: 1001;
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .side-menu.open {
+            transform: translateX(0);
+        }
+
+        .side-menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .side-menu-header button {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .side-menu a {
+            text-decoration: none;
+            color: #ddd;
+            font-size: 14px;
+            padding: 8px 6px;
+            border-radius: 6px;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .side-menu a:hover {
+            background-color: #00e676;
+            color: #000;
+        }
+
+        
+        .menu-toggle {
+            background: none;
+            border: none;
+            text-align: left;
+            width: 100%;
+            padding: 8px 6px;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #ddd;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .menu-toggle:hover {
+            background-color: #00e676;
+            color: #000;
+        }
+
+        .menu-arrow {
+            font-size: 12px;
+            margin-left: 6px;
+        }
+
+        .contact-info {
+            font-size: 12px;
+            color: #aaa;
+            padding: 4px 6px 0 6px;
+            display: none;
+        }
+
+        .contact-info.show {
+            display: block;
+        }
+
+        .menu-footer {
+            margin-top: auto;
+            font-size: 11px;
+            color: #666;
+            border-top: 1px solid #333;
+            padding-top: 8px;
+        }
+
+        
+        .backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+
+        .backdrop.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        
+        .home {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 0 10px 20px;
+        }
+
+        .home-intro {
+            font-size: 14px;
+            color: #bbb;
+            margin-bottom: 10px;
+        }
+
+        .section {
+            margin-bottom: 8px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: 4px 2px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .section-arrow {
+            font-size: 14px;
+            margin-left: 8px;
+        }
+
+        .section-content {
+            margin-top: 6px;
+        }
+
+        .section-content.collapsed {
+            display: none;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .card {
+            background-color: #151515;
+            border-radius: 10px;
+            padding: 16px 14px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .card-desc {
+            font-size: 13px;
+            color: #aaa;
+        }
+
+        .card-actions {
+            margin-top: 6px;
+        }
+
+        .card-btn {
+            display: inline-block;
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: none;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            background-color: #00e676;
+            color: #000;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .card-btn:hover:not(.disabled) {
+            background-color: #00c853;
+            transform: translateY(-1px);
+        }
+
+        .card-btn.disabled {
+            background-color: #555;
+            color: #ccc;
+            cursor: default;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                padding: 32px 60px;
+            }
+
+            .header {
+                font-size: 32px;
+                margin-bottom: 40px;
+            }
+
+            .home-intro {
+                font-size: 15px;
+            }
+
+            .card-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .card-title {
+                font-size: 18px;
+            }
+        }

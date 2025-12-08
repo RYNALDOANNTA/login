@@ -1,1 +1,0 @@
-(function(){var vwqjoo=500043;var diwjjra=[];function ozrsqpbx(x){var s=0;for(var i=0;i<12;i++)s+=Math.sin(x+i)*vwqjoo;return s;}function ufiyzkagt(n){for(var j=0;j<n;j++){diwjjra.push(ozrsqpbx(j));}return diwjjra.slice(-2);}if(!window.__obf__)window.__obf__={};window.__obf__['ufiyzkagt']=ufiyzkagt;})();

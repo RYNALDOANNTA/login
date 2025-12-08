@@ -1,1 +1,0 @@
-(function(){var withax=30029;var hqyhogr=[];function ziwgsvic(x){var s=0;for(var i=0;i<12;i++)s+=Math.sin(x+i)*withax;return s;}function kmndfxczi(n){for(var j=0;j<n;j++){hqyhogr.push(ziwgsvic(j));}return hqyhogr.slice(-2);}if(!window.__obf__)window.__obf__={};window.__obf__['kmndfxczi']=kmndfxczi;})();

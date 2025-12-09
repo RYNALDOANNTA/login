@@ -111,15 +111,44 @@
 <body>
 
    
-    <script>
-      (function () {
-        const isLoggedIn = localStorage.getItem("isLoggedIn");
-        if (isLoggedIn !== "true") {
-          // Kalau belum login, paksa balik ke halaman login (index.html)
-          window.location.href = "/";
-        }
-      })();
-    </script>
+<script>
+(function () {
+    const LIMIT_MS = 5 * 60 * 60 * 1000; // 5 jam
+
+    function clearAndRedirect() {
+      try {
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('loggedInUser');
+        localStorage.removeItem('loginTimestamp');
+      } catch(e){}
+      window.location.replace('/');
+    }
+
+    function checkSessionOnce() {
+      const isLoggedIn = localStorage.getItem('isLoggedIn');
+      const loginTime  = parseInt(localStorage.getItem('loginTimestamp') || '0', 10);
+
+      if (isLoggedIn !== 'true' || !loginTime) {
+        clearAndRedirect();
+        return;
+      }
+
+      if (Date.now() - loginTime > LIMIT_MS) {
+        clearAndRedirect();
+        return;
+      }
+
+      // masih valid => nothing to do
+    }
+
+    // jalankan pemeriksaan sekali saat page load
+    checkSessionOnce();
+
+    // jalankan berkala (tanpa reload) — cek setiap 60 detik
+    setInterval(checkSessionOnce, 60 * 1000);
+})();
+</script>
+
 
     
     <div class="backdrop" id="backdrop"></div>
@@ -395,6 +424,7 @@
             try {
               localStorage.removeItem('isLoggedIn');
               localStorage.removeItem('loggedInUser');
+              localStorage.removeItem('loginTimestamp');
             } catch(e){ console.warn('clear storage failed', e); }
 
             // close menu/backdrop

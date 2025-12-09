@@ -23,15 +23,39 @@
 </head>
 <body>
    
-    <script>
-      (function () {
-        const isLoggedIn = localStorage.getItem("isLoggedIn");
-        if (isLoggedIn !== "true") {
-          // Kalau belum login, paksa balik ke halaman login (index.html)
-          window.location.href = "/";
-        }
-      })();
-    </script>
+<script>
+(function () {
+    const LIMIT_MS = 5 * 60 * 60 * 1000; // 5 jam
+
+    function clearAndRedirect() {
+      try {
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('loggedInUser');
+        localStorage.removeItem('loginTimestamp');
+      } catch(e){}
+      // sesuaikan path login jika bukan '/'
+      window.location.replace('/');
+    }
+
+    function checkSessionOnce() {
+      const isLoggedIn = localStorage.getItem('isLoggedIn');
+      const loginTime  = parseInt(localStorage.getItem('loginTimestamp') || '0', 10);
+
+      if (isLoggedIn !== 'true' || !loginTime) {
+        clearAndRedirect();
+        return;
+      }
+
+      if (Date.now() - loginTime > LIMIT_MS) {
+        clearAndRedirect();
+        return;
+      }
+    }
+    checkSessionOnce();
+    setInterval(checkSessionOnce, 60 * 1000);
+})();
+</script>
+
   <div class="topbar">
     <button class="back" id="backBtn">
       <span class="back-arrow">←</span>

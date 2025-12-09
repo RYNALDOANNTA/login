@@ -189,6 +189,8 @@
     // ✅ SIMPAN STATUS LOGIN
     localStorage.setItem("isLoggedIn", "true");
     localStorage.setItem("loggedInUser", username);
+    localStorage.setItem("loginTimestamp", Date.now());
+
 
     // ✅ Overlay hijau + redirect
     showSuccessOverlay(username);

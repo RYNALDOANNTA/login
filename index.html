@@ -4,22 +4,28 @@
   <meta charset="UTF-8" />
   <title>Login Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="assets/css/mbykzkb/jxhcqoflvgbv.css">
 
-    <link rel="stylesheet" href="assets/css/vtuyayzueb/mttmavi/lhpbyrxwek/qgqzgytigbhb.css">
-    <link rel="stylesheet" href="assets/css/nqfmqscr/bejeecsaeozd.css">
-    <link rel="stylesheet" href="assets/css/hoznthwtaa/ssqbp/cqbdcmhq/pwhuymxvamqi.css">
-    <link rel="stylesheet" href="assets/css/uodpgr/vodbjcgo/gioxz/jwqqbnigqytq.css">
-    <link rel="stylesheet" href="assets/css/ljkxyvkt/rvawcakfpobq.css">
-    <link rel="stylesheet" href="assets/css/euswtojl/jreoqvsicxzz.css">
-    <link rel="stylesheet" href="assets/css/aevpkzuil/gunyq/fdimjr/hpkiquzonzoi.css">
-    <script src="assets/js/aafynpvi/wxifcfdwfllo.js"></script>
-    <script src="assets/js/bajnigrbpf/yadquzpf/kgyzgckwidec.js"></script>
-    <script src="assets/js/bvwdmiep/tqzmcp/ouokkjspalvc.js"></script>
-    <script src="assets/js/lkpez/yhlwskpptlcm.js"></script>
-    <script src="assets/js/sxuqmhrr/mwqzuos/ubrmfel/qdrziecvctvt.js"></script>
-    <script src="assets/js/cichk/ozknof/jeoqsugnubki.js"></script>
-    <script src="assets/js/hrsdst/dfsjnidwd/kvvmawdndvuh.js"></script>
+  <!-- CSS kamu -->
+  <link rel="stylesheet" href="assets/css/mbykzkb/jxhcqoflvgbv.css">
+  <link rel="stylesheet" href="assets/css/vtuyayzueb/mttmavi/lhpbyrxwek/qgqzgytigbhb.css">
+  <link rel="stylesheet" href="assets/css/nqfmqscr/bejeecsaeozd.css">
+  <link rel="stylesheet" href="assets/css/hoznthwtaa/ssqbp/cqbdcmhq/pwhuymxvamqi.css">
+  <link rel="stylesheet" href="assets/css/uodpgr/vodbjcgo/gioxz/jwqqbnigqytq.css">
+  <link rel="stylesheet" href="assets/css/ljkxyvkt/rvawcakfpobq.css">
+  <link rel="stylesheet" href="assets/css/euswtojl/jreoqvsicxzz.css">
+  <link rel="stylesheet" href="assets/css/aevpkzuil/gunyq/fdimjr/hpkiquzonzoi.css">
+
+  <!-- JS kamu -->
+  <script src="assets/js/aafynpvi/wxifcfdwfllo.js"></script>
+  <script src="assets/js/bajnigrbpf/yadquzpf/kgyzgckwidec.js"></script>
+  <script src="assets/js/bvwdmiep/tqzmcp/ouokkjspalvc.js"></script>
+  <script src="assets/js/lkpez/yhlwskpptlcm.js"></script>
+  <script src="assets/js/sxuqmhrr/mwqzuos/ubrmfel/qdrziecvctvt.js"></script>
+  <script src="assets/js/cichk/ozknof/jeoqsugnubki.js"></script>
+  <script src="assets/js/hrsdst/dfsjnidwd/kvvmawdndvuh.js"></script>
+
+  <!-- Cloudflare Turnstile -->
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
 
@@ -44,6 +50,13 @@
         </div>
         <input id="captchaInput" type="text" placeholder="Masukkan kode di gambar" required />
         <div id="errorMessage" class="error-message"></div>
+
+        <div id="cf-challenge" style="margin-top: 10px;">
+          <div class="cf-turnstile"
+               data-sitekey="0x4AAAAAACFkPKSHBpyD-iEt"
+               data-theme="light">
+          </div>
+        </div>
       </div>
 
       <button type="submit" class="login-btn">Login</button>
@@ -58,7 +71,7 @@
   </div>
 
   <script>
-    // ---- Captcha ----
+    
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
     let currentCaptcha = "";
 
@@ -71,6 +84,9 @@
     const successOverlay = document.getElementById("successOverlay");
     const successBox = successOverlay.querySelector(".success-box");
     const successMessage = document.getElementById("successMessage");
+
+  
+    const cfTokenInputSelector = 'input[name="cf-turnstile-response"]';
 
     function generateCaptchaString(len = 6) {
       let result = "";
@@ -152,57 +168,81 @@
       successBox.classList.add("animate");
     }
 
+    function resetCloudflareChallenge() {
+      if (window.turnstile && typeof turnstile.reset === "function") {
+        turnstile.reset();
+      }
+    }
+
     window.onload = setNewCaptcha;
     refreshCaptchaBtn.onclick = setNewCaptcha;
 
-    // ---- Submit Login ----
-   loginForm.addEventListener("submit", async function (e) {
-  e.preventDefault();
+    
+    loginForm.addEventListener("submit", async function (e) {
+      e.preventDefault();
 
-  const inputCaptcha = captchaInput.value.trim().toUpperCase();
-  const username = document.getElementById("username").value.trim();
-  const password = document.getElementById("password").value;
+      const inputCaptcha = captchaInput.value.trim().toUpperCase();
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value;
 
-  // 1. Cek captcha dulu
-  if (!inputCaptcha || inputCaptcha !== currentCaptcha) {
-    showError("Captcha salah, coba lagi.");
-    setNewCaptcha();
-    return;
-  }
+      
+      if (!inputCaptcha || inputCaptcha !== currentCaptcha) {
+        showError("Captcha salah, coba lagi.");
+        setNewCaptcha();
+        resetCloudflareChallenge();
+        return;
+      }
 
-  hideError();
+      hideError();
 
-  try {
-    const res = await fetch("/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
+      
+      const cfTokenInput = document.querySelector(cfTokenInputSelector);
+      const cfToken = cfTokenInput ? cfTokenInput.value : "";
+
+      if (!cfToken) {
+        showError("Challenge Cloudflare belum selesai. Silakan verifikasi dulu.");
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username,
+            password,
+            cfToken 
+          }),
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok || !data.ok) {
+          showError("Username atau password salah.");
+          
+          setNewCaptcha();
+          resetCloudflareChallenge();
+          return;
+        }
+
+        
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("loggedInUser", username);
+        localStorage.setItem("loginTimestamp", Date.now());
+
+      
+        showSuccessOverlay(username);
+        setTimeout(() => {
+          window.location.href = "oyjyx/urervflc/rzgih/pffmrkzdmgqa.html";
+        }, 1200);
+      } catch (err) {
+        console.error(err);
+        showError("Terjadi error pada server. Coba lagi.");
+        
+        setNewCaptcha();
+        resetCloudflareChallenge();
+      }
     });
-
-    const data = await res.json().catch(() => ({}));
-
-    if (!res.ok || !data.ok) {
-      showError("Username atau password salah.");
-      return;
-    }
-
-    // ✅ SIMPAN STATUS LOGIN
-    localStorage.setItem("isLoggedIn", "true");
-    localStorage.setItem("loggedInUser", username);
-    localStorage.setItem("loginTimestamp", Date.now());
-
-
-    // ✅ Overlay hijau + redirect
-    showSuccessOverlay(username);
-    setTimeout(() => {
-      window.location.href = "oyjyx/urervflc/rzgih/pffmrkzdmgqa.html";
-    }, 1200);
-  } catch (err) {
-    console.error(err);
-    showError("Terjadi error pada server. Coba lagi.");
-  }
-});
-
   </script>
 </body>
 </html>

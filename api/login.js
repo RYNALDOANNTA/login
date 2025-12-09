@@ -24,7 +24,7 @@ export default async function handler(req, res) {
     (u) =>
       u.username &&
       u.hash &&
-      u.username.toLowerCase() === username.trim().toLowerCase()
+      u.username === username.trim()
   );
 
   if (!user) {

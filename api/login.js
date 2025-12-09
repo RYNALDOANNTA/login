@@ -13,14 +13,11 @@ export default async function handler(req, res) {
   }
 
   const users = [
-    {
-      username: process.env.USER1_USERNAME, // raynaldo
-      hash: process.env.USER1_HASH,         // hash "raynaldo 123"
-    },
-    {
-      username: process.env.USER2_USERNAME, // wijaya
-      hash: process.env.USER2_HASH,         // hash "wijaya123"
-    },
+    { username: process.env.USER1_USERNAME, hash: process.env.USER1_HASH },
+    { username: process.env.USER2_USERNAME, hash: process.env.USER2_HASH },
+    { username: process.env.USER3_USERNAME, hash: process.env.USER3_HASH },
+    { username: process.env.USER4_USERNAME, hash: process.env.USER4_HASH },
+    { username: process.env.USER5_USERNAME, hash: process.env.USER5_HASH },
   ];
 
   const user = users.find(

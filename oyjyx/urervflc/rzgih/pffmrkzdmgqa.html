@@ -20,6 +20,93 @@
     <script src="../../../assets/js/sxuqmhrr/mwqzuos/ubrmfel/qdrziecvctvt.js"></script>
     <script src="../../../assets/js/cichk/ozknof/jeoqsugnubki.js"></script>
     <script src="../../../assets/js/hrsdst/dfsjnidwd/kvvmawdndvuh.js"></script>
+
+    <!-- Styles khusus tombol logout + modal (tidak mengubah file CSS utama) -->
+    <style>
+      /* header small helper so logout doesn't break layout */
+      .header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+      /* logout button */
+      .logout-btn {
+        display:inline-flex;
+        align-items:center;
+        gap:10px;
+        padding:10px 14px;
+        border-radius:999px;
+        border:0;
+        cursor:pointer;
+        font-weight:600;
+        font-size:14px;
+        color:#fff;
+        background:linear-gradient(135deg,#ff4757 0%,#ff3742 100%);
+        box-shadow:0 6px 18px rgba(255,71,87,0.35);
+        transition:transform .22s ease, box-shadow .22s ease;
+        position:relative;
+        overflow:hidden;
+      }
+      .logout-btn:active { transform:translateY(1px); }
+      .logout-btn:hover { transform:translateY(-3px); box-shadow:0 14px 30px rgba(255,71,87,0.45); }
+      /* icon (SVG) */
+      .logout-icon { width:18px; height:18px; display:inline-block; transform:translateX(0); transition:transform .28s cubic-bezier(.2,.9,.3,1); }
+      .logout-btn:hover .logout-icon { transform:translateX(6px); }
+      /* loading state */
+      .logout-btn.loading { color:transparent; pointer-events:none; }
+      .logout-btn.loading::after {
+        content: "";
+        position: absolute;
+        left:50%;
+        top:50%;
+        width:22px;height:22px;margin-left:-11px;margin-top:-11px;
+        border-radius:50%;
+        border:3px solid rgba(255,255,255,0.25);
+        border-top-color:#fff;
+        animation:spin 0.9s linear infinite;
+      }
+      @keyframes spin { to{ transform:rotate(360deg); } }
+
+      /* ripple (span appended) */
+      .ripple {
+        position:absolute;
+        border-radius:50%;
+        transform:scale(0);
+        animation:ripple-red 0.8s linear;
+        background: rgba(255,255,255,0.45);
+        pointer-events:none;
+      }
+      @keyframes ripple-red {
+        0%{ transform:scale(0); opacity:0.7; }
+        100%{ transform:scale(30); opacity:0; }
+      }
+
+      /* Modal */
+      .logout-modal {
+        display:none;
+        position:fixed; inset:0;
+        background:rgba(0,0,0,0.6);
+        z-index:9999;
+        justify-content:center; align-items:center;
+      }
+      .logout-modal.show { display:flex; }
+      .logout-modal-box {
+        background:#0f1724;
+        padding:22px;
+        border-radius:12px;
+        width:100%; max-width:420px;
+        box-shadow:0 20px 60px rgba(0,0,0,0.6);
+        border:1px solid rgba(255,71,87,0.06);
+        text-align:center;
+      }
+      .logout-modal-box h3 { color:#ff4757; margin-bottom:8px; }
+      .logout-modal-box p { color:#bfc6d8; margin-bottom:18px; font-size:15px; }
+      .logout-modal-actions { display:flex; gap:12px; justify-content:center; }
+      .btn-confirm, .btn-cancel {
+        padding:10px 14px; border-radius:999px; border:0; cursor:pointer; font-weight:600;
+      }
+      .btn-confirm { background:linear-gradient(135deg,#ff4757,#ff3742); color:#fff; }
+      .btn-cancel { background: rgba(255,255,255,0.06); color:#e6eef9; border:1px solid rgba(255,255,255,0.04); }
+      .btn-confirm:hover { transform:translateY(-3px); }
+      .btn-cancel:hover { transform:translateY(-3px); }
+      @media (max-width:480px){ .logout-btn{ padding:8px 12px; font-size:13px; } }
+    </style>
 </head>
 <body>
 
@@ -73,12 +160,24 @@
                 BERANDA
             </div>
 
-            
-            <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
+            <!-- Tambah tombol Logout di sini (tidak mengubah struktur lain) -->
+            <div style="display:flex; align-items:center; gap:8px;">
+              <button id="logoutBtn" class="logout-btn" title="Logout" aria-label="Logout">
+                <!-- simple SVG logout icon -->
+                <svg class="logout-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M16 17L21 12L16 7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+                  <path d="M21 12H9" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+                  <path d="M13 19H6C4.89543 19 4 18.1046 4 17V7C4 5.89543 4.89543 5 6 5H13" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+                <span>Logout</span>
+              </button>
+
+              <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+              </button>
+            </div>
         </div>
 
         
@@ -239,5 +338,103 @@
         setupSectionToggle('speedHeader', 'speedSection', 'arrowSpeed');
         setupSectionToggle('kwhHeader', 'kwhSection', 'arrowKwh');
     </script>
+
+    <!-- Modal logout (ditambahkan) -->
+    <div class="logout-modal" id="logoutModal" aria-hidden="true" role="dialog" aria-labelledby="logoutTitle">
+      <div class="logout-modal-box" role="document">
+        <h3 id="logoutTitle">Konfirmasi Logout</h3>
+        <p>Anda akan keluar dari akun Anda. Pastikan Anda telah menyimpan semua perubahan sebelum logout.</p>
+        <div class="logout-modal-actions">
+          <button class="btn-confirm" id="confirmLogout">Ya, Logout</button>
+          <button class="btn-cancel" id="cancelLogout">Batal</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Script logout (ditambahkan) -->
+    <script>
+      (function(){
+        const logoutBtn = document.getElementById('logoutBtn');
+        const modal = document.getElementById('logoutModal');
+        const confirmBtn = document.getElementById('confirmLogout');
+        const cancelBtn = document.getElementById('cancelLogout');
+        const backdropEl = document.getElementById('backdrop');
+
+        function createRedRipple(e){
+          const btn = e.currentTarget;
+          const circle = document.createElement('span');
+          const diameter = Math.max(btn.clientWidth, btn.clientHeight);
+          const radius = diameter / 2;
+          circle.style.width = circle.style.height = diameter + 'px';
+          circle.style.left = (e.clientX - btn.getBoundingClientRect().left - radius) + 'px';
+          circle.style.top = (e.clientY - btn.getBoundingClientRect().top - radius) + 'px';
+          circle.className = 'ripple';
+          btn.appendChild(circle);
+          setTimeout(()=> {
+            if (circle.parentElement === btn) btn.removeChild(circle);
+          }, 800);
+        }
+
+        function showModal(){ modal.classList.add('show'); modal.setAttribute('aria-hidden','false'); }
+        function hideModal(){ modal.classList.remove('show'); modal.setAttribute('aria-hidden','true'); }
+
+        // safe close menu if function exists
+        function safeCloseMenu(){
+          try { closeMenuFn(); } catch(e){ /* ignore */ }
+          try { backdropEl.classList.remove('show'); } catch(e){ }
+        }
+
+        function processLogout(){
+          if(!logoutBtn) return;
+          // visual loading
+          logoutBtn.classList.add('loading');
+
+          // small delay so user sees animation
+          setTimeout(()=> {
+            // clear client-side login state
+            try {
+              localStorage.removeItem('isLoggedIn');
+              localStorage.removeItem('loggedInUser');
+            } catch(e){ console.warn('clear storage failed', e); }
+
+            // close menu/backdrop
+            safeCloseMenu();
+
+            // optional: call server logout endpoint here if you have one
+            // fetch('/api/logout', { method:'POST', credentials:'include' }).catch(()=>{});
+
+            // redirect to login (replace so back button won't return)
+            window.location.replace('/');
+          }, 800);
+        }
+
+        if (logoutBtn) {
+          logoutBtn.addEventListener('click', function(e){
+            createRedRipple(e);
+            showModal();
+          });
+        }
+
+        if (confirmBtn) confirmBtn.addEventListener('click', function(e){
+          processLogout();
+        });
+
+        if (cancelBtn) cancelBtn.addEventListener('click', function(e){
+          hideModal();
+        });
+
+        // close if click outside box
+        modal.addEventListener('click', function(e){
+          if (e.target === modal) hideModal();
+        });
+
+        // keyboard: escape to close modal
+        document.addEventListener('keydown', function(ev){
+          if (ev.key === 'Escape' && modal.classList.contains('show')) hideModal();
+        });
+      })();
+    </script>
+
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"version":"2024.11.0","token":"679cb2cebd6a41caa8c3db545262099e","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
